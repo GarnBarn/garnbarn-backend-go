@@ -5,8 +5,7 @@ import (
 )
 
 type Config struct {
-	Env     string
-	Version string
+	Env string
 }
 
 func InitLogger(loggerConfig Config) {

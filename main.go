@@ -16,8 +16,7 @@ func init() {
 
 func main() {
 	logger.InitLogger(logger.Config{
-		Version: "0",
-		Env:     appConfig.Env,
+		Env: appConfig.Env,
 	})
 
 	logrus.Info("Hello")
