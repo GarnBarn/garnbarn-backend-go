@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/GarnBarn/garnbarn-backend-go/config"
+	"github.com/GarnBarn/garnbarn-backend-go/pkg/httpserver"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/logger"
 	"github.com/sirupsen/logrus"
 )
@@ -12,12 +15,15 @@ var (
 
 func init() {
 	appConfig = config.Load()
-}
-
-func main() {
 	logger.InitLogger(logger.Config{
 		Env: appConfig.Env,
 	})
 
-	logrus.Info("Hello")
+}
+
+func main() {
+	httpServer := httpserver.NewHttpServer()
+
+	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
+	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))
 }
