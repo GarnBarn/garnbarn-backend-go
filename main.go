@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/GarnBarn/garnbarn-backend-go/config"
+	"github.com/GarnBarn/garnbarn-backend-go/handler"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/httpserver"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/logger"
 	"github.com/sirupsen/logrus"
@@ -22,7 +23,14 @@ func init() {
 }
 
 func main() {
+	// Create the http server
 	httpServer := httpserver.NewHttpServer()
+
+	// Init the handler
+	exampleHandler := handler.NewExampleHandler()
+
+	// Add Routes
+	httpServer.GET("/example", exampleHandler.HelloWorld)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))
