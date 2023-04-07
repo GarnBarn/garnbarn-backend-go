@@ -9,9 +9,10 @@ import (
 )
 
 type Config struct {
-	Env              string
-	HTTP_SERVER_PORT string `envconfig:"HTTP_SERVER_PORT" default:"3000"`
-	GIN_MODE         string `envconfig:"GIN_MODE" default:"release"`
+	Env                     string
+	HTTP_SERVER_PORT        string `envconfig:"HTTP_SERVER_PORT" default:"3000"`
+	GIN_MODE                string `envconfig:"GIN_MODE" default:"release"`
+	MYSQL_CONNECTION_STRING string `envconfig:"MYSQL_CONNECTION_STRING"`
 }
 
 func Load() Config {
