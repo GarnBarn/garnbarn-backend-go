@@ -1,2 +1,2 @@
 run:
-	go run .
+	ENV=dev go run .
