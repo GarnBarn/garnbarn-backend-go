@@ -5,7 +5,6 @@ import (
 
 	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/GarnBarn/garnbarn-backend-go/handler"
-	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/httpserver"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/logger"
 	"github.com/GarnBarn/garnbarn-backend-go/repository"
@@ -33,9 +32,6 @@ func main() {
 	if err != nil {
 		logrus.Panic("Can't connect to db: ", err)
 	}
-
-	// Migrate the schema
-	db.AutoMigrate(&model.ExampleDB{})
 
 	// Create the repositroies
 	exampleRepository := repository.NewExampleRepository(db)

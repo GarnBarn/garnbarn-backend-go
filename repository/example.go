@@ -15,6 +15,9 @@ type example struct {
 }
 
 func NewExampleRepository(db *gorm.DB) Example {
+	// Migrate the db
+	db.AutoMigrate(&model.ExampleDB{})
+
 	return &example{
 		db: db,
 	}
