@@ -12,16 +12,16 @@ type AssignmentHandler struct {
 	assignmentService service.AssignmentService
 }
 
-func NewAssignmentHandler(rg *gin.RouterGroup, assignmentService service.AssignmentService) AssignmentHandler {
-	result := AssignmentHandler{
+func NewAssignmentHandler(assignmentService service.AssignmentService) AssignmentHandler {
+	return AssignmentHandler{
 		assignmentService: assignmentService,
 	}
+}
 
+func (a *AssignmentHandler) AssignmentRoute(rg *gin.RouterGroup) {
 	router := rg.Group("/assignment")
 
-	router.POST("/", result.CreateAssignment)
-
-	return result
+	router.POST("/", a.CreateAssignment)
 }
 
 func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
