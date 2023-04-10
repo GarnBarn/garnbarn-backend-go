@@ -7,7 +7,7 @@ import (
 )
 
 type AssignmentRepository interface {
-	CreateAssignment(assignment model.Assignment) error
+	CreateAssignment(assignment *model.Assignment) error
 }
 
 type assignmentRepository struct {
@@ -23,10 +23,10 @@ func NewAssignmentRepository(db *gorm.DB) AssignmentRepository {
 	}
 }
 
-func (a *assignmentRepository) CreateAssignment(assignment model.Assignment) error {
-	logrus.Debug("Executing Create on %T", assignment)
+func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment) error {
+	logrus.Debug("Executing Create on %T", assignmentData)
 
-	res := a.db.Create(assignment)
+	res := a.db.Create(assignmentData)
 
 	// HandleError
 	if res.Error != nil && res.Error != gorm.ErrRecordNotFound {
