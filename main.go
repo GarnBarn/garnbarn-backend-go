@@ -56,7 +56,7 @@ func main() {
 	assignmentHandler := handler.NewAssignmentHandler(assignmentService)
 
 	// Add Routes
-	router := httpServer.Group("/assignment")
+	router := httpServer.Group("/api/v1")
 
 	// Tag
 	tagRouter := httpServer.Group("/tag")
