@@ -34,7 +34,7 @@ func (a *assignmentService) CreateAssignment(c gin.Context) {
 		return
 	}
 
-	if result := a.assignmentRepository.Create(assignment); result != nil {
+	if result := a.assignmentRepository.CreateAssignment(assignment); result != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": result,
 		})
