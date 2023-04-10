@@ -35,18 +35,25 @@ func main() {
 
 	// Create the repositroies
 	exampleRepository := repository.NewExampleRepository(db)
+	tagRepository := repository.NewTagRepository(db)
 
 	// Create the services
 	exampleService := service.NewExampleService(exampleRepository)
+	tagService := service.NewTagService(tagRepository)
 
 	// Create the http server
 	httpServer := httpserver.NewHttpServer()
 
 	// Init the handler
 	exampleHandler := handler.NewExampleHandler(exampleService)
+	tagHandler := handler.NewTagHandler(tagService)
 
 	// Add Routes
 	httpServer.GET("/example", exampleHandler.HelloWorld)
+
+	// Tag
+	tagRouter := httpServer.Group("/tag")
+	tagRouter.POST("/", tagHandler.CreateTag)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))
