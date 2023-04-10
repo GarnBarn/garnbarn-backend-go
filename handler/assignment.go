@@ -19,7 +19,7 @@ func NewAssignmentHandler(assignmentService service.AssignmentService) Assignmen
 }
 
 func (a *AssignmentHandler) AssignmentRoute(rg *gin.RouterGroup) {
-	router := rg.Group("/assignment")
+	router := rg.Group("/")
 
 	router.POST("/", a.CreateAssignment)
 }
