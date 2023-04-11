@@ -48,5 +48,8 @@ func (t *Tag) CreateTag(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+
+	tagPublic := tag.ToTagPublic()
+
+	c.JSON(http.StatusOK, tagPublic)
 }

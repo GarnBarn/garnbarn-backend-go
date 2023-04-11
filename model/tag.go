@@ -51,7 +51,7 @@ type TagPublic struct {
 	Color         string   `json:"color"`
 	ReminderTime  []int    `json:"reminderTime"`
 	Subscriber    []string `json:"subscribe"`
-	SecretKeyTotp string   `json:"secretKeyTotp"`
+	SecretKeyTotp string   `json:"secretKeyTotp,omitempty"`
 }
 
 type CreateTagRequest struct {
@@ -64,8 +64,6 @@ type CreateTagRequest struct {
 func (ct *CreateTagRequest) ToTag(author string) Tag {
 	reminderTimeByte, _ := json.Marshal(ct.ReminderTime)
 	reminderTimeString := strings.Trim(string(reminderTimeByte), "[]")
-
-	logrus.Info(reminderTimeString)
 
 	return Tag{
 		Name:         ct.Name,
