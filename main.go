@@ -9,6 +9,7 @@ import (
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/logger"
 	"github.com/GarnBarn/garnbarn-backend-go/repository"
 	"github.com/GarnBarn/garnbarn-backend-go/service"
+	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -33,6 +34,9 @@ func main() {
 		logrus.Panic("Can't connect to db: ", err)
 	}
 
+	// Create the required dependentices
+	validate := validator.New()
+
 	// Create the repositroies
 	exampleRepository := repository.NewExampleRepository(db)
 	tagRepository := repository.NewTagRepository(db)
@@ -46,7 +50,7 @@ func main() {
 
 	// Init the handler
 	exampleHandler := handler.NewExampleHandler(exampleService)
-	tagHandler := handler.NewTagHandler(tagService)
+	tagHandler := handler.NewTagHandler(*validate, tagService)
 
 	// Add Routes
 	httpServer.GET("/example", exampleHandler.HelloWorld)
