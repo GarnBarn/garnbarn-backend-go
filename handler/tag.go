@@ -103,3 +103,12 @@ func (t *Tag) UpdateTag(c *gin.Context) {
 	tagPublic := tag.ToTagPublic(true)
 	c.JSON(http.StatusOK, tagPublic)
 }
+
+func (t *Tag) GetAllTags(c *gin.Context) {
+	tagPublicSlice, err := t.tagService.GetAllTags()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
+		return
+	}
+	c.JSON(http.StatusOK, tagPublicSlice)
+}

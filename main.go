@@ -57,8 +57,11 @@ func main() {
 
 	// Tag
 	tagRouter := httpServer.Group("/tag")
+	tagRouter.GET("/", tagHandler.GetAllTags)
 	tagRouter.POST("/", tagHandler.CreateTag)
 	tagRouter.PATCH("/:tagId", tagHandler.UpdateTag)
+
+	_, _ = tagRepository.GetAll()
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))
