@@ -26,3 +26,8 @@ func (t *tag) Create(tag *model.Tag) error {
 	result := t.db.Create(tag)
 	return result.Error
 }
+
+func (t *tag) Updaate(tag *model.Tag) error {
+	result := t.db.UpdateColumns(tag)
+	return result.Error
+}

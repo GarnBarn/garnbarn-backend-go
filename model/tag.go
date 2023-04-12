@@ -73,3 +73,9 @@ func (ct *CreateTagRequest) ToTag(author string) Tag {
 		Subscriber:   strings.Join(ct.Subscriber, ","),
 	}
 }
+
+type UpdateTagRequest struct {
+	Name         string `json:"name,omitempty"`
+	Color        string `json:"color,omitempty"`
+	ReminderTime []int  `json:"reminderTime,omitempty" validate:"len=3,omitempty"`
+}
