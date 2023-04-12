@@ -104,11 +104,18 @@ func (t *Tag) UpdateTag(c *gin.Context) {
 	c.JSON(http.StatusOK, tagPublic)
 }
 
-func (t *Tag) GetAllTags(c *gin.Context) {
-	tagPublicSlice, err := t.tagService.GetAllTags()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
+func (t *Tag) GetTagById(c *gin.Context) {
+	tagId := c.Param("id")
+	publicTag, err := t.tagService.GetTagById(tagId)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
 		return
 	}
-	c.JSON(http.StatusOK, tagPublicSlice)
+	
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrGinBadRequestBody)
+		return
+	}
+	c.JSON(http.StatusOK, publicTag)
 }
