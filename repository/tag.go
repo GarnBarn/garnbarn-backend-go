@@ -7,6 +7,8 @@ import (
 
 type Tag interface {
 	Create(tag *model.Tag) error
+	Update(tag *model.Tag) error
+	GetByID(id int) (*model.Tag, error)
 }
 
 type tag struct {
@@ -22,12 +24,18 @@ func NewTagRepository(db *gorm.DB) Tag {
 	}
 }
 
+func (t *tag) GetByID(id int) (*model.Tag, error) {
+	tag := model.Tag{}
+	result := t.db.First(&tag, id)
+	return &tag, result.Error
+}
+
 func (t *tag) Create(tag *model.Tag) error {
 	result := t.db.Create(tag)
 	return result.Error
 }
 
-func (t *tag) Updaate(tag *model.Tag) error {
-	result := t.db.UpdateColumns(tag)
+func (t *tag) Update(tag *model.Tag) error {
+	result := t.db.Save(tag)
 	return result.Error
 }
