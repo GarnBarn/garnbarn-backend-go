@@ -53,7 +53,7 @@ func main() {
 	// Init the handler
 	exampleHandler := handler.NewExampleHandler(exampleService)
 	tagHandler := handler.NewTagHandler(*validate, tagService)
-	assignmentHandler := handler.NewAssignmentHandler(assignmentService)
+	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService)
 
 	// Add Routes
 	router := httpServer.Group("/api/v1")
