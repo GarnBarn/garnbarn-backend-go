@@ -62,5 +62,5 @@ func (t *tag) GetTagById(tagId int) (model.TagPublic, error) {
 		return model.TagPublic{}, err
 	}
 
-	return tag.ToTagPublic(), nil
+	return tag.ToTagPublic(true), nil
 }

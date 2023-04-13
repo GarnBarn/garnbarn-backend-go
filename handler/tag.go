@@ -11,7 +11,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 type Tag struct {
