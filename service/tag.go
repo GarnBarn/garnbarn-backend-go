@@ -13,6 +13,7 @@ type tag struct {
 
 type Tag interface {
 	CreateTag(tag *model.Tag) error
+	UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*model.Tag, error)
 }
 
 func NewTagService(tagRepository repository.Tag) Tag {
@@ -35,4 +36,20 @@ func (t *tag) CreateTag(tag *model.Tag) error {
 	tag.SecretKeyTotp = totpPrivateKey
 
 	return t.tagRepository.Create(tag)
+}
+
+func (t *tag) UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*model.Tag, error) {
+	// Get current tag
+	tag, err := t.tagRepository.GetByID(tagId)
+	if err != nil {
+		logrus.Error(err)
+		return nil, err
+	}
+
+	// Update the tag object
+	tagUpdateRequest.UpdateTag(tag)
+
+	// Update the data in db.
+	err = t.tagRepository.Update(tag)
+	return tag, err
 }

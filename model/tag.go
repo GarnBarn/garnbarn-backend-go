@@ -20,7 +20,12 @@ type Tag struct {
 	SecretKeyTotp string
 }
 
-func (t *Tag) ToTagPublic() TagPublic {
+func convertReminterTimeToString(reminterTime []int) string {
+	reminderTimeByte, _ := json.Marshal(reminterTime)
+	return strings.Trim(string(reminderTimeByte), "[]")
+}
+
+func (t *Tag) ToTagPublic(maskSecretKey bool) TagPublic {
 	reminderTime := strings.Split(t.ReminderTime, ",")
 	reminterTimeInt := []int{}
 
@@ -33,6 +38,11 @@ func (t *Tag) ToTagPublic() TagPublic {
 		reminterTimeInt = append(reminterTimeInt, result)
 	}
 
+	secretKey := ""
+	if !maskSecretKey {
+		secretKey = t.SecretKeyTotp
+	}
+
 	return TagPublic{
 		ID:            fmt.Sprint(t.ID),
 		Name:          t.Name,
@@ -40,7 +50,7 @@ func (t *Tag) ToTagPublic() TagPublic {
 		Color:         t.Color,
 		ReminderTime:  reminterTimeInt,
 		Subscriber:    strings.Split(t.Subscriber, ","),
-		SecretKeyTotp: t.SecretKeyTotp,
+		SecretKeyTotp: secretKey,
 	}
 }
 
@@ -57,19 +67,41 @@ type TagPublic struct {
 type CreateTagRequest struct {
 	Name         string   `json:"name" validate:"required"`
 	Color        string   `json:"color"`
-	ReminderTime []int    `json:"reminderTime,omitempty" validate:"len=3,omitempty"`
+	ReminderTime []int    `json:"reminderTime,omitempty" validate:"omitempty,len=3"`
 	Subscriber   []string `json:"subscribe"`
 }
 
 func (ct *CreateTagRequest) ToTag(author string) Tag {
-	reminderTimeByte, _ := json.Marshal(ct.ReminderTime)
-	reminderTimeString := strings.Trim(string(reminderTimeByte), "[]")
-
 	return Tag{
 		Name:         ct.Name,
 		Author:       author,
 		Color:        ct.Color,
-		ReminderTime: reminderTimeString,
+		ReminderTime: convertReminterTimeToString(ct.ReminderTime),
 		Subscriber:   strings.Join(ct.Subscriber, ","),
+	}
+}
+
+type UpdateTagRequest struct {
+	Name         *string   `json:"name,omitempty"`
+	Color        *string   `json:"color,omitempty"`
+	ReminderTime *[]int    `json:"reminderTime,omitempty" validate:"omitempty,len=3"`
+	Subscriber   *[]string `json:"subscribe"`
+}
+
+func (utr *UpdateTagRequest) UpdateTag(tag *Tag) {
+	if utr.Name != nil {
+		tag.Name = *utr.Name
+	}
+
+	if utr.Color != nil {
+		tag.Color = *utr.Color
+	}
+
+	if utr.ReminderTime != nil {
+		tag.ReminderTime = convertReminterTimeToString(*utr.ReminderTime)
+	}
+
+	if utr.Subscriber != nil {
+		tag.Subscriber = strings.Join(*utr.Subscriber, ",")
 	}
 }
