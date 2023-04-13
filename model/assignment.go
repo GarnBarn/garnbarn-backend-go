@@ -58,7 +58,7 @@ type AssignmentRequest struct {
 	Name         string `json:"name" validate:"required"`
 	Description  string `json:"description"`
 	DueDate      int    `json:"dueDate"`
-	TagId        int    `json:"tagId" validate:"min=1"`
+	TagId        int    `json:"tagId"`
 	ReminderTime []int  `json:"reminderTime,omitempty" validate:"len=3,omitempty"`
 }
 
