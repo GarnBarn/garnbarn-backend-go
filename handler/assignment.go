@@ -43,9 +43,9 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 	// TODO: Change this to the actual user from the authentication header
 	assignment := assignmentRequest.ToAssignment("test")
 
-	if result := a.assignmentService.CreateAssignment(&assignment); result != nil {
+	if err := a.assignmentService.CreateAssignment(&assignment); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": result,
+			"error": err,
 		})
 		return
 	}
