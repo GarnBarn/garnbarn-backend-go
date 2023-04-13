@@ -20,7 +20,7 @@ type Assignment struct {
 	TagId        int
 }
 
-func (a *Assignment) ToAssignmentResponse() AssignmentResponse {
+func (a *Assignment) ToAssignmentPublic() AssignmentPublic {
 	reminderTime := strings.Split(a.ReminderTime, ",")
 	reminterTimeInt := []int{}
 
@@ -33,7 +33,7 @@ func (a *Assignment) ToAssignmentResponse() AssignmentResponse {
 		reminterTimeInt = append(reminterTimeInt, result)
 	}
 
-	return AssignmentResponse{
+	return AssignmentPublic{
 		ID:           fmt.Sprint(a.ID),
 		Name:         a.Name,
 		Author:       a.Author,
@@ -44,7 +44,7 @@ func (a *Assignment) ToAssignmentResponse() AssignmentResponse {
 	}
 }
 
-type AssignmentResponse struct {
+type AssignmentPublic struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Author       string `json:"author"`

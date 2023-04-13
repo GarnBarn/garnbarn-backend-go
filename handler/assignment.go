@@ -50,8 +50,8 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 		return
 	}
 
-	assignmentResponse := assignment.ToAssignmentResponse()
+	assignmentPublic := assignment.ToAssignmentPublic()
 
-	c.JSON(http.StatusCreated, assignmentResponse)
+	c.JSON(http.StatusCreated, assignmentPublic)
 
 }
