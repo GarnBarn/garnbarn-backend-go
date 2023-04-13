@@ -56,7 +56,7 @@ func (t *tag) UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*m
 }
 
 func (t *tag) GetTagById(tagId int) (model.TagPublic, error) {
-	tag, err := t.tagRepository.GetById(tagId)
+	tag, err := t.tagRepository.GetByID(tagId)
 	if err != nil {
 		logrus.Error(err)
 		return model.TagPublic{}, err
