@@ -28,7 +28,7 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 	err := c.ShouldBindJSON(&assignmentRequest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"message": err.Error(),
 		})
 		return
 	}
@@ -45,7 +45,7 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 
 	if err := a.assignmentService.CreateAssignment(&assignment); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
+			"message": err.Error(),
 		})
 		return
 	}
