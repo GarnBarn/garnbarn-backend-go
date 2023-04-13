@@ -66,8 +66,8 @@ func main() {
 	tagRouter.DELETE(("/:tagId"), tagHandler.DeleteTag)
 
 	// Add Assignment Routes
-	router := httpServer.Group("/api/v1")
-	assignmentHandler.AssignmentRoute(router)
+	assignmentRouter := httpServer.Group("/api/v1/assignment")
+	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))

@@ -22,12 +22,6 @@ func NewAssignmentHandler(validate validator.Validate, assignmentService service
 	}
 }
 
-func (a *AssignmentHandler) AssignmentRoute(rg *gin.RouterGroup) {
-	router := rg.Group("/assignment")
-
-	router.POST("/", a.CreateAssignment)
-}
-
 func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 	var assignmentRequest model.AssignmentRequest
 
