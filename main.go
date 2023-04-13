@@ -55,18 +55,20 @@ func main() {
 	tagHandler := handler.NewTagHandler(*validate, tagService)
 	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService)
 
+	// Router
+	router := httpServer.Group("/api/v1")
+
 	// Example
 	httpServer.GET("/example", exampleHandler.HelloWorld)
 
 	// Tag
-	tagRouter := httpServer.Group("/tag")
-	tagRouter.GET("/:id", tagHandler.GetTagById)
+	tagRouter := router.Group("/tag")
 	tagRouter.POST("/", tagHandler.CreateTag)
 	tagRouter.PATCH("/:tagId", tagHandler.UpdateTag)
 	tagRouter.DELETE(("/:tagId"), tagHandler.DeleteTag)
 
-	// Add Assignment Routes
-	assignmentRouter := httpServer.Group("/api/v1/assignment")
+	// Assignment
+	assignmentRouter := router.Group("/assignment")
 	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
