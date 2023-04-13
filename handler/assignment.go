@@ -25,8 +25,6 @@ func NewAssignmentHandler(validate validator.Validate, assignmentService service
 func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 	var assignmentRequest model.AssignmentRequest
 
-	// add validate
-	// handle tagId & dueDate timestamp
 	err := c.ShouldBindJSON(&assignmentRequest)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
