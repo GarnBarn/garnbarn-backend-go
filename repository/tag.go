@@ -9,7 +9,6 @@ type Tag interface {
 	Create(tag *model.Tag) error
 	Update(tag *model.Tag) error
 	GetByID(id int) (*model.Tag, error)
-	GetById(tagId string) (model.Tag, error)
 }
 
 type tag struct {
@@ -39,10 +38,4 @@ func (t *tag) Create(tag *model.Tag) error {
 func (t *tag) Update(tag *model.Tag) error {
 	result := t.db.Save(tag)
 	return result.Error
-}
-
-func (t *tag) GetById(tagId string) (model.Tag, error) {
-	var record model.Tag
-	result := t.db.First(&record, tagId)
-	return record, result.Error
 }

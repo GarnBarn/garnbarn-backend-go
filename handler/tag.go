@@ -11,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 type Tag struct {
@@ -105,17 +106,26 @@ func (t *Tag) UpdateTag(c *gin.Context) {
 }
 
 func (t *Tag) GetTagById(c *gin.Context) {
-	tagId := c.Param("id")
-	publicTag, err := t.tagService.GetTagById(tagId)
+	tagIdStr, ok := c.Params.Get("id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+	tagId, err := strconv.Atoi(tagIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
 
+	publicTag, err := t.tagService.GetTagById(tagId)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
 		return
 	}
-	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrGinBadRequestBody)
 		return
 	}
+
 	c.JSON(http.StatusOK, publicTag)
 }

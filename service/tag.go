@@ -14,7 +14,7 @@ type tag struct {
 type Tag interface {
 	CreateTag(tag *model.Tag) error
 	UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*model.Tag, error)
-	GetTagById(tagId string) (model.TagPublic, error)
+	GetTagById(tagId int) (model.TagPublic, error)
 }
 
 func NewTagService(tagRepository repository.Tag) Tag {
@@ -55,7 +55,7 @@ func (t *tag) UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*m
 	return tag, err
 }
 
-func (t *tag) GetTagById(tagId string) (model.TagPublic, error) {
+func (t *tag) GetTagById(tagId int) (model.TagPublic, error) {
 	tag, err := t.tagRepository.GetById(tagId)
 	if err != nil {
 		logrus.Error(err)
