@@ -137,10 +137,10 @@ func (t *Tag) DeleteTag(c *gin.Context) {
 	}
 	tagId, err := strconv.Atoi(tagIdString)
 	err = t.tagService.DeleteTag(tagId)
-	if err == nil {
-		c.Status(http.StatusOK)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
 		return
 	}
-	c.Status(http.StatusBadRequest)
+	c.Status(http.StatusOK)
 	return
 }

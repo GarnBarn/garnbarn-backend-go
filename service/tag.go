@@ -66,8 +66,8 @@ func (t *tag) GetTagById(tagId int) (model.TagPublic, error) {
 	return tag.ToTagPublic(true), nil
 }
 func (t *tag) DeleteTag(tagId int) error {
-	logrus.Info("Check tag information")
-	defer logrus.Info("Complete check tag information")
+	logrus.Info("Check delete tag")
+	defer logrus.Info("Complete delete tag")
 	err := t.tagRepository.DeleteTag(tagId)
 	return err
 }
