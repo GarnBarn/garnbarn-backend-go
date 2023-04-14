@@ -34,5 +34,6 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 		return res.Error
 	}
 
+	a.db.Joins("Tag").First(assignmentData, assignmentData.ID)
 	return nil
 }

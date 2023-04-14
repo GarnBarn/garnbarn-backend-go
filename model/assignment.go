@@ -17,7 +17,8 @@ type Assignment struct {
 	Description  string
 	ReminderTime string
 	DueDate      int
-	TagId        int
+	TagID        int
+	Tag          *Tag
 }
 
 func (a *Assignment) ToAssignmentPublic() AssignmentPublic {
@@ -39,19 +40,19 @@ func (a *Assignment) ToAssignmentPublic() AssignmentPublic {
 		Author:       a.Author,
 		Description:  a.Description,
 		DueDate:      a.DueDate,
-		TagId:        a.TagId,
+		Tag:          a.Tag.ToTagPublic(true),
 		ReminderTime: reminterTimeInt,
 	}
 }
 
 type AssignmentPublic struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Author       string `json:"author"`
-	Description  string `json:"description,omitempty"`
-	DueDate      int    `json:"dueDate"`
-	TagId        int    `json:"tagId"`
-	ReminderTime []int  `json:"reminderTime"`
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	Author       string    `json:"author"`
+	Description  string    `json:"description,omitempty"`
+	DueDate      int       `json:"dueDate"`
+	Tag          TagPublic `json:"tag"`
+	ReminderTime []int     `json:"reminderTime"`
 }
 
 type AssignmentRequest struct {
@@ -66,12 +67,16 @@ func (ar *AssignmentRequest) ToAssignment(author string) Assignment {
 	reminderTimeByte, _ := json.Marshal(ar.ReminderTime)
 	reminderTimeString := strings.Trim(string(reminderTimeByte), "[]")
 
+	tag := Tag{}
+	tag.ID = uint(ar.TagId)
+
 	return Assignment{
 		Name:         ar.Name,
 		Author:       author,
 		Description:  ar.Description,
 		ReminderTime: reminderTimeString,
 		DueDate:      ar.DueDate,
-		TagId:        ar.TagId,
+		TagID:        ar.TagId,
+		Tag:          &tag,
 	}
 }
