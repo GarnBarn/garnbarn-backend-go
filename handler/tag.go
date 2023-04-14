@@ -142,5 +142,4 @@ func (t *Tag) DeleteTag(c *gin.Context) {
 		return
 	}
 	c.Status(http.StatusOK)
-	return
 }
