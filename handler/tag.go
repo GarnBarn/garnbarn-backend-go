@@ -129,12 +129,18 @@ func (t *Tag) GetTagById(c *gin.Context) {
 	c.JSON(http.StatusOK, publicTag)
 }
 
-func (t *Tag) DeleteTag(tagId string) (g *gin.Context) {
-	err := t.tagService.DeleteTag(tagId)
-	if err == nil {
-		g.Status(http.StatusOK)
+func (t *Tag) DeleteTag(c *gin.Context) {
+	tagIdString, ok := c.Params.Get("tagId")
+	if !ok {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
 		return
 	}
-	g.Status(http.StatusBadRequest)
+	tagId, err := strconv.Atoi(tagIdString)
+	err = t.tagService.DeleteTag(tagId)
+	if err == nil {
+		c.Status(http.StatusOK)
+		return
+	}
+	c.Status(http.StatusBadRequest)
 	return
 }
