@@ -103,3 +103,28 @@ func (t *Tag) UpdateTag(c *gin.Context) {
 	tagPublic := tag.ToTagPublic(true)
 	c.JSON(http.StatusOK, tagPublic)
 }
+
+func (t *Tag) GetTagById(c *gin.Context) {
+	tagIdStr, ok := c.Params.Get("id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+	tagId, err := strconv.Atoi(tagIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	publicTag, err := t.tagService.GetTagById(tagId)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "tag id not found"})
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrGinBadRequestBody)
+		return
+	}
+
+	c.JSON(http.StatusOK, publicTag)
+}

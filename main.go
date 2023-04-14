@@ -57,6 +57,7 @@ func main() {
 
 	// Tag
 	tagRouter := httpServer.Group("/tag")
+	tagRouter.GET("/:id", tagHandler.GetTagById)
 	tagRouter.POST("/", tagHandler.CreateTag)
 	tagRouter.PATCH("/:tagId", tagHandler.UpdateTag)
 
