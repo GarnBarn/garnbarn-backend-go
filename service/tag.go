@@ -15,6 +15,7 @@ type Tag interface {
 	CreateTag(tag *model.Tag) error
 	UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*model.Tag, error)
 	GetTagById(tagId int) (model.TagPublic, error)
+	DeleteTag(tagId int) error
 }
 
 func NewTagService(tagRepository repository.Tag) Tag {
@@ -63,4 +64,10 @@ func (t *tag) GetTagById(tagId int) (model.TagPublic, error) {
 	}
 
 	return tag.ToTagPublic(true), nil
+}
+func (t *tag) DeleteTag(tagId int) error {
+	logrus.Info("Check delete tag")
+	defer logrus.Info("Complete delete tag")
+	err := t.tagRepository.DeleteTag(tagId)
+	return err
 }

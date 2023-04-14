@@ -60,6 +60,7 @@ func main() {
 	tagRouter.GET("/:id", tagHandler.GetTagById)
 	tagRouter.POST("/", tagHandler.CreateTag)
 	tagRouter.PATCH("/:tagId", tagHandler.UpdateTag)
+	tagRouter.DELETE(("/:tagId"), tagHandler.DeleteTag)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))
