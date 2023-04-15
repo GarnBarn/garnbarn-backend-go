@@ -44,7 +44,7 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 func (a *assignmentRepository) GetAllAssignment(fromPresent bool) (result []model.Assignment, err error) {
 	now := time.Now()
 
-	baseQuery := a.db.Model(&model.Assignment{})
+	baseQuery := a.db.Model(&model.Assignment{}).Joins("Tag")
 
 	var res *gorm.DB
 	if fromPresent {
