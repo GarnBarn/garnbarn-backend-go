@@ -22,6 +22,28 @@ func NewAssignmentHandler(validate validator.Validate, assignmentService service
 	}
 }
 
+func (a *AssignmentHandler) GetAllAssignment(c *gin.Context) {
+	assignments, err := a.assignmentService.GetAllAssignment()
+
+	assignmentPublic := []model.AssignmentPublic{}
+
+	for _, item := range assignments {
+		assignmentPublic = append(assignmentPublic, item.ToAssignmentPublic())
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, model.BulkResponse[model.AssignmentPublic]{
+		Count:    1,
+		Previous: nil,
+		Next:     nil,
+		Results:  assignmentPublic,
+	})
+}
+
 func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 	var assignmentRequest model.AssignmentRequest
 

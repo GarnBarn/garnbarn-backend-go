@@ -7,6 +7,7 @@ import (
 )
 
 type AssignmentRepository interface {
+	GetAllAssignment() ([]model.Assignment, error)
 	CreateAssignment(assignment *model.Assignment) error
 }
 
@@ -36,4 +37,13 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 
 	a.db.Joins("Tag").First(assignmentData, assignmentData.ID)
 	return nil
+}
+
+func (a *assignmentRepository) GetAllAssignment() (result []model.Assignment, err error) {
+	res := a.db.Model(&model.Assignment{}).Find(&result)
+	if res.Error != nil {
+		return result, res.Error
+	}
+
+	return result, nil
 }
