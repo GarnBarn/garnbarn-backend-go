@@ -40,12 +40,10 @@ func main() {
 	validate := validator.New()
 
 	// Create the repositroies
-	exampleRepository := repository.NewExampleRepository(db)
 	tagRepository := repository.NewTagRepository(db)
 	assignmentRepository := repository.NewAssignmentRepository(db)
 
 	// Create the services
-	exampleService := service.NewExampleService(exampleRepository)
 	tagService := service.NewTagService(tagRepository)
 	assignmentService := service.NewAssignmentService(assignmentRepository)
 
@@ -53,7 +51,6 @@ func main() {
 	httpServer := httpserver.NewHttpServer()
 
 	// Init the handler
-	exampleHandler := handler.NewExampleHandler(exampleService)
 	tagHandler := handler.NewTagHandler(*validate, tagService)
 	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService)
 
@@ -71,9 +68,6 @@ func main() {
 
 	// Router
 	router := httpServer.Group("/api/v1")
-
-	// Example
-	httpServer.GET("/example", exampleHandler.HelloWorld)
 
 	// Tag
 	tagRouter := router.Group("/tag")
