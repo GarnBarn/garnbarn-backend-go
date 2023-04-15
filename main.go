@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	firebase "firebase.google.com/go"
 	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/GarnBarn/garnbarn-backend-go/handler"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/httpserver"
@@ -13,6 +15,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/api/option"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -36,16 +39,25 @@ func main() {
 		logrus.Panic("Can't connect to db: ", err)
 	}
 
+	// Initilize the Firebase App
+	opt := option.WithCredentialsFile(appConfig.FIREBASE_CONFIG_FILE)
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		logrus.Fatalln("error initializing app: %v\n", err)
+	}
+
 	// Create the required dependentices
 	validate := validator.New()
 
 	// Create the repositroies
 	tagRepository := repository.NewTagRepository(db)
 	assignmentRepository := repository.NewAssignmentRepository(db)
+	accountRepository := repository.NewAccountRepository(db)
 
 	// Create the services
 	tagService := service.NewTagService(tagRepository)
 	assignmentService := service.NewAssignmentService(assignmentRepository)
+	accountService := service.NewAccountService(app, accountRepository)
 
 	// Create the http server
 	httpServer := httpserver.NewHttpServer()
@@ -53,6 +65,7 @@ func main() {
 	// Init the handler
 	tagHandler := handler.NewTagHandler(*validate, tagService)
 	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService)
+	accountHandler := handler.NewAccountHandler(accountService)
 
 	httpServer.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -81,6 +94,10 @@ func main() {
 	assignmentRouter := router.Group("/assignment")
 	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
 	assignmentRouter.GET("/", assignmentHandler.GetAllAssignment)
+
+	// Account
+	accountRouter := router.Group("/account")
+	accountRouter.GET("/", accountHandler.GetAccount)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))
