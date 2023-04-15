@@ -23,7 +23,18 @@ func NewAssignmentHandler(validate validator.Validate, assignmentService service
 }
 
 func (a *AssignmentHandler) GetAllAssignment(c *gin.Context) {
-	assignments, err := a.assignmentService.GetAllAssignment()
+	fromPresentString := c.Query("fromPresent")
+
+	logrus.Debug("From Present string: ", fromPresentString)
+
+	fromPresent := true
+	if fromPresentString == "" || fromPresentString == "false" {
+		fromPresent = false
+	}
+
+	logrus.Debug("From Present: ", fromPresent)
+
+	assignments, err := a.assignmentService.GetAllAssignment(fromPresent)
 
 	assignmentPublic := []model.AssignmentPublic{}
 

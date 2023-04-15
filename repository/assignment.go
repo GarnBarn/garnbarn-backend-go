@@ -1,13 +1,15 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type AssignmentRepository interface {
-	GetAllAssignment() ([]model.Assignment, error)
+	GetAllAssignment(formPresent bool) ([]model.Assignment, error)
 	CreateAssignment(assignment *model.Assignment) error
 }
 
@@ -39,8 +41,18 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 	return nil
 }
 
-func (a *assignmentRepository) GetAllAssignment() (result []model.Assignment, err error) {
-	res := a.db.Model(&model.Assignment{}).Find(&result)
+func (a *assignmentRepository) GetAllAssignment(fromPresent bool) (result []model.Assignment, err error) {
+	now := time.Now()
+
+	baseQuery := a.db.Model(&model.Assignment{})
+
+	var res *gorm.DB
+	if fromPresent {
+		res = baseQuery.Where("due_date >= ?", now.Unix()*1000).Find(&result)
+	} else {
+		res = baseQuery.Find(&result)
+	}
+
 	if res.Error != nil {
 		return result, res.Error
 	}
