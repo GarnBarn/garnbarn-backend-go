@@ -34,25 +34,31 @@ func (a *Assignment) ToAssignmentPublic() AssignmentPublic {
 		reminterTimeInt = append(reminterTimeInt, result)
 	}
 
-	return AssignmentPublic{
+	assignmentResult := AssignmentPublic{
 		ID:           fmt.Sprint(a.ID),
 		Name:         a.Name,
 		Author:       a.Author,
 		Description:  a.Description,
 		DueDate:      a.DueDate,
-		Tag:          a.Tag.ToTagPublic(true),
+		Tag:          nil,
 		ReminderTime: reminterTimeInt,
 	}
+
+	if a.Tag != nil {
+		tagPublicResult := a.Tag.ToTagPublic(true)
+		assignmentResult.Tag = &tagPublicResult
+	}
+	return assignmentResult
 }
 
 type AssignmentPublic struct {
-	ID           string    `json:"id"`
-	Name         string    `json:"name"`
-	Author       string    `json:"author"`
-	Description  string    `json:"description,omitempty"`
-	DueDate      int       `json:"dueDate"`
-	Tag          TagPublic `json:"tag"`
-	ReminderTime []int     `json:"reminderTime"`
+	ID           string     `json:"id"`
+	Name         string     `json:"name"`
+	Author       string     `json:"author"`
+	Description  string     `json:"description,omitempty"`
+	DueDate      int        `json:"dueDate"`
+	Tag          *TagPublic `json:"tag"`
+	ReminderTime []int      `json:"reminderTime"`
 }
 
 type AssignmentRequest struct {
