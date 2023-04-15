@@ -60,7 +60,7 @@ type AssignmentRequest struct {
 	Description  string `json:"description"`
 	DueDate      int    `json:"dueDate"`
 	TagId        int    `json:"tagId"`
-	ReminderTime []int  `json:"reminderTime,omitempty" validate:"len=3,omitempty"`
+	ReminderTime []int  `json:"reminderTime,omitempty" validate:"max=3,omitempty"`
 }
 
 func (ar *AssignmentRequest) ToAssignment(author string) Assignment {
