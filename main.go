@@ -77,6 +77,7 @@ func main() {
 
 	// Tag
 	tagRouter := router.Group("/tag")
+	tagRouter.GET("/", tagHandler.GetAllTag)
 	tagRouter.POST("/", tagHandler.CreateTag)
 	tagRouter.PATCH("/:tagId", tagHandler.UpdateTag)
 	tagRouter.DELETE(("/:tagId"), tagHandler.DeleteTag)

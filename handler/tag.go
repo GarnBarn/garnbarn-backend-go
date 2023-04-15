@@ -29,6 +29,29 @@ func NewTagHandler(validate validator.Validate, tagService service.Tag) Tag {
 	}
 }
 
+func (t *Tag) GetAllTag(c *gin.Context) {
+	tags, err := t.tagService.GetAllTag()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	tagsPublic := []model.TagPublic{}
+
+	for _, item := range tags {
+		tagsPublic = append(tagsPublic, item.ToTagPublic(true))
+	}
+
+	c.JSON(http.StatusOK, model.BulkResponse[model.TagPublic]{
+		Count:    len(tagsPublic),
+		Previous: nil,
+		Next:     nil,
+		Results:  tagsPublic,
+	})
+
+}
+
 func (t *Tag) CreateTag(c *gin.Context) {
 
 	var tagRequest model.CreateTagRequest
