@@ -77,10 +77,11 @@ func main() {
 
 	// Tag
 	tagRouter := router.Group("/tag")
+	tagRouter.GET("/:id", tagHandler.GetTagById)
 	tagRouter.GET("/", tagHandler.GetAllTag)
 	tagRouter.POST("/", tagHandler.CreateTag)
 	tagRouter.PATCH("/:tagId", tagHandler.UpdateTag)
-	tagRouter.DELETE(("/:tagId"), tagHandler.DeleteTag)
+	tagRouter.DELETE("/:tagId", tagHandler.DeleteTag)
 
 	// Assignment
 	assignmentRouter := router.Group("/assignment")
