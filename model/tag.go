@@ -60,15 +60,15 @@ type TagPublic struct {
 	Author        string   `json:"author"`
 	Color         string   `json:"color"`
 	ReminderTime  []int    `json:"reminderTime"`
-	Subscriber    []string `json:"subscribe"`
+	Subscriber    []string `json:"subscriber"`
 	SecretKeyTotp string   `json:"secretKeyTotp,omitempty"`
 }
 
 type CreateTagRequest struct {
 	Name         string   `json:"name" validate:"required"`
 	Color        string   `json:"color"`
-	ReminderTime []int    `json:"reminderTime,omitempty" validate:"omitempty,len=3"`
-	Subscriber   []string `json:"subscribe"`
+	ReminderTime []int    `json:"reminderTime,omitempty" validate:"omitempty,max=3"`
+	Subscriber   []string `json:"subscriber"`
 }
 
 func (ct *CreateTagRequest) ToTag(author string) Tag {
@@ -84,7 +84,7 @@ func (ct *CreateTagRequest) ToTag(author string) Tag {
 type UpdateTagRequest struct {
 	Name         *string   `json:"name,omitempty"`
 	Color        *string   `json:"color,omitempty"`
-	ReminderTime *[]int    `json:"reminderTime,omitempty" validate:"omitempty,len=3"`
+	ReminderTime *[]int    `json:"reminderTime,omitempty" validate:"omitempty,max=3"`
 	Subscriber   *[]string `json:"subscribe"`
 }
 

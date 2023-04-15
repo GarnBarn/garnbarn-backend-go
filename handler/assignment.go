@@ -49,7 +49,7 @@ func (a *AssignmentHandler) GetAllAssignment(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, model.BulkResponse[model.AssignmentPublic]{
-		Count:    1,
+		Count:    len(assignmentPublic),
 		Previous: nil,
 		Next:     nil,
 		Results:  assignmentPublic,
