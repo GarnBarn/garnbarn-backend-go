@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/GarnBarn/garnbarn-backend-go/handler"
@@ -9,6 +10,7 @@ import (
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/logger"
 	"github.com/GarnBarn/garnbarn-backend-go/repository"
 	"github.com/GarnBarn/garnbarn-backend-go/service"
+	"github.com/gin-contrib/cors"
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -54,6 +56,18 @@ func main() {
 	exampleHandler := handler.NewExampleHandler(exampleService)
 	tagHandler := handler.NewTagHandler(*validate, tagService)
 	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService)
+
+	httpServer.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return true
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	// Router
 	router := httpServer.Group("/api/v1")
