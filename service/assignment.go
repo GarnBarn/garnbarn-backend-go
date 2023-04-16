@@ -7,6 +7,7 @@ import (
 
 type AssignmentService interface {
 	CreateAssignment(assignment *model.Assignment) error
+	DeleteAssignment(assignmentId int) error
 }
 
 type assignmentService struct {
@@ -21,4 +22,8 @@ func NewAssignmentService(assignmentRepository repository.AssignmentRepository) 
 
 func (a *assignmentService) CreateAssignment(assignmentData *model.Assignment) error {
 	return a.assignmentRepository.CreateAssignment(assignmentData)
+}
+
+func (a *assignmentService) DeleteAssignment(assignmentId int) error {
+	return a.assignmentRepository.DeleteAssignment(assignmentId)
 }

@@ -70,6 +70,7 @@ func main() {
 	// Assignment
 	assignmentRouter := router.Group("/assignment")
 	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
+	assignmentRouter.DELETE("/:Id", assignmentHandler.DeleteAssignment)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))

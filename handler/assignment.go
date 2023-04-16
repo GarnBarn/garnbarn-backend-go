@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/GarnBarn/garnbarn-backend-go/service"
@@ -54,4 +55,19 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, assignmentPublic)
 
+}
+
+func (a *AssignmentHandler) DeleteAssignment(c *gin.Context) {
+	assignmentIdString, ok := c.Params.Get("Id")
+	if !ok {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+	assignmentId, err := strconv.Atoi(assignmentIdString)
+	err = a.assignmentService.DeleteAssignment(assignmentId)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	c.Status(http.StatusOK)
 }

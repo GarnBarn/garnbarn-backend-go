@@ -8,6 +8,7 @@ import (
 
 type AssignmentRepository interface {
 	CreateAssignment(assignment *model.Assignment) error
+	DeleteAssignment(assignmentId int) error
 }
 
 type assignmentRepository struct {
@@ -36,4 +37,10 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 
 	a.db.Joins("Tag").First(assignmentData, assignmentData.ID)
 	return nil
+}
+
+func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
+	logrus.Info("Delete assignment an id: ", assignmentId)
+	result := a.db.Joins("Tag").Delete(&model.Assignment{}, assignmentId)
+	return result.Error
 }
