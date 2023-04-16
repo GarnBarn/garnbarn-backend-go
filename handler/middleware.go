@@ -12,6 +12,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	UserUidKey = "userUid"
+)
+
 func Authentication(app *firebase.App, accountRepository repository.AccountRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("authorization")
@@ -38,14 +42,17 @@ func Authentication(app *firebase.App, accountRepository repository.AccountRepos
 			return
 		}
 
-		_, err = accountRepository.GetAccountByUid(validatedIdToken.UID)
+		account, err := accountRepository.GetAccountByUid(validatedIdToken.UID)
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
-				accountRepository.CreateAccountByUid(validatedIdToken.UID)
+				account, err = accountRepository.CreateAccountByUid(validatedIdToken.UID)
 			} else {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"messsage": fmt.Sprint("Middleware Error: ", err.Error())})
 				return
 			}
 		}
+
+		c.AddParam(UserUidKey, account.Uid)
+		c.Next()
 	}
 }

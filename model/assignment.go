@@ -65,7 +65,7 @@ type AssignmentRequest struct {
 	Name         string `json:"name" validate:"required"`
 	Description  string `json:"description"`
 	DueDate      int    `json:"dueDate"`
-	TagId        int    `json:"tagId"`
+	TagId        string `json:"tagId"`
 	ReminderTime []int  `json:"reminderTime,omitempty" validate:"max=3,omitempty"`
 }
 
@@ -73,8 +73,10 @@ func (ar *AssignmentRequest) ToAssignment(author string) Assignment {
 	reminderTimeByte, _ := json.Marshal(ar.ReminderTime)
 	reminderTimeString := strings.Trim(string(reminderTimeByte), "[]")
 
+	tagIdInt, _ := strconv.Atoi(ar.TagId)
+
 	tag := Tag{}
-	tag.ID = uint(ar.TagId)
+	tag.ID = uint(tagIdInt)
 
 	return Assignment{
 		Name:         ar.Name,
@@ -82,7 +84,7 @@ func (ar *AssignmentRequest) ToAssignment(author string) Assignment {
 		Description:  ar.Description,
 		ReminderTime: reminderTimeString,
 		DueDate:      ar.DueDate,
-		TagID:        ar.TagId,
+		TagID:        tagIdInt,
 		Tag:          &tag,
 	}
 }

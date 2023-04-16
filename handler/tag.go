@@ -70,8 +70,7 @@ func (t *Tag) CreateTag(c *gin.Context) {
 		return
 	}
 
-	// TODO: Change this to the actual user from the authentication header
-	tag := tagRequest.ToTag("test")
+	tag := tagRequest.ToTag(c.Param(UserUidKey))
 
 	err = t.tagService.CreateTag(&tag)
 	if err != nil {
