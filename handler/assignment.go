@@ -39,7 +39,9 @@ func (a *AssignmentHandler) GetAllAssignment(c *gin.Context) {
 
 	logrus.Debug("From Present: ", fromPresent)
 
-	assignments, err := a.assignmentService.GetAllAssignment(fromPresent)
+	uid := c.Param(UserUidKey)
+
+	assignments, err := a.assignmentService.GetAllAssignment(uid, fromPresent)
 
 	assignmentPublic := []model.AssignmentPublic{}
 

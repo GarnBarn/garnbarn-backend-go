@@ -12,7 +12,7 @@ type tag struct {
 }
 
 type Tag interface {
-	GetAllTag() ([]model.Tag, error)
+	GetAllTag(author string) ([]model.Tag, error)
 	CreateTag(tag *model.Tag) error
 	UpdateTag(tagId int, tagUpdateRequest *model.UpdateTagRequest) (*model.Tag, error)
 	GetTagById(tagId int) (model.TagPublic, error)
@@ -26,8 +26,8 @@ func NewTagService(tagRepository repository.Tag) Tag {
 	}
 }
 
-func (t *tag) GetAllTag() ([]model.Tag, error) {
-	return t.tagRepository.GetAllTag()
+func (t *tag) GetAllTag(author string) ([]model.Tag, error) {
+	return t.tagRepository.GetAllTag(author)
 }
 
 func (t *tag) CreateTag(tag *model.Tag) error {

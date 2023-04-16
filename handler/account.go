@@ -22,8 +22,7 @@ func NewAccountHandler(accountService service.AccountService) AccountHandler {
 func (a *AccountHandler) GetAccount(c *gin.Context) {
 	uid := c.Query("uid")
 	if uid == "" {
-		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
-		return
+		uid = c.Param(UserUidKey)
 	}
 
 	account, err := a.accountService.GetUserByUid(uid)

@@ -8,7 +8,7 @@ import (
 
 type AssignmentService interface {
 	CreateAssignment(assignment *model.Assignment) error
-	GetAllAssignment(fromPresent bool) ([]model.Assignment, error)
+	GetAllAssignment(author string, fromPresent bool) ([]model.Assignment, error)
 	UpdateAssignment(updateAssignmentRequest *model.UpdateAssignmentRequest, id int) (*model.Assignment, error)
 }
 
@@ -26,8 +26,8 @@ func (a *assignmentService) CreateAssignment(assignmentData *model.Assignment) e
 	return a.assignmentRepository.CreateAssignment(assignmentData)
 }
 
-func (a *assignmentService) GetAllAssignment(fromPresent bool) ([]model.Assignment, error) {
-	return a.assignmentRepository.GetAllAssignment(fromPresent)
+func (a *assignmentService) GetAllAssignment(author string, fromPresent bool) ([]model.Assignment, error) {
+	return a.assignmentRepository.GetAllAssignment(author, fromPresent)
 }
 
 func (a *assignmentService) UpdateAssignment(updateAssignmentRequest *model.UpdateAssignmentRequest, id int) (*model.Assignment, error) {
