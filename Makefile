@@ -2,4 +2,4 @@ run:
 	ENV=dev go run .
 
 run-compose:
-	docker-compose up -d
+	COMPOSE_PROJECT_NAME=garnbarn docker-compose up -d
