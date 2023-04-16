@@ -7,6 +7,7 @@ import (
 
 type AccountRepository interface {
 	GetAccountByUid(uid string) (account model.Account, err error)
+	CreateAccountByUid(uid string) (account model.Account, err error)
 }
 
 type accountRepository struct {
@@ -27,4 +28,15 @@ func (a *accountRepository) GetAccountByUid(uid string) (account model.Account, 
 		return account, res.Error
 	}
 	return account, nil
+}
+
+func (a *accountRepository) CreateAccountByUid(uid string) (account model.Account, err error) {
+	account = model.Account{
+		Uid: uid,
+	}
+	res := a.db.Save(&account)
+	if res.Error != nil {
+		return account, res.Error
+	}
+	return account, err
 }

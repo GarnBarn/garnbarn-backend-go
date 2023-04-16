@@ -10,7 +10,6 @@ import (
 	"github.com/GarnBarn/garnbarn-backend-go/handler"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/httpserver"
 	"github.com/GarnBarn/garnbarn-backend-go/pkg/logger"
-	"github.com/GarnBarn/garnbarn-backend-go/pkg/middleware"
 	"github.com/GarnBarn/garnbarn-backend-go/repository"
 	"github.com/GarnBarn/garnbarn-backend-go/service"
 	"github.com/gin-contrib/cors"
@@ -83,7 +82,7 @@ func main() {
 	// Router
 	router := httpServer.Group("/api/v1")
 
-	router.Use(middleware.Authentication(app))
+	router.Use(handler.Authentication(app, accountRepository))
 
 	// Tag
 	tagRouter := router.Group("/tag")

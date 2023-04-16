@@ -1,4 +1,4 @@
-package middleware
+package handler
 
 import (
 	"context"
@@ -7,10 +7,12 @@ import (
 	"strings"
 
 	firebase "firebase.google.com/go"
+	"github.com/GarnBarn/garnbarn-backend-go/repository"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func Authentication(app *firebase.App) gin.HandlerFunc {
+func Authentication(app *firebase.App, accountRepository repository.AccountRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("authorization")
 
@@ -30,11 +32,20 @@ func Authentication(app *firebase.App) gin.HandlerFunc {
 			return
 		}
 
-		_, err = authClient.VerifyIDToken(ctx, firebaseIdToken)
+		validatedIdToken, err := authClient.VerifyIDToken(ctx, firebaseIdToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"messsage": err.Error()})
 			return
 		}
 
+		_, err = accountRepository.GetAccountByUid(validatedIdToken.UID)
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				accountRepository.CreateAccountByUid(validatedIdToken.UID)
+			} else {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"messsage": fmt.Sprint("Middleware Error: ", err.Error())})
+				return
+			}
+		}
 	}
 }
