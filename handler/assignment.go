@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 
 	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/GarnBarn/garnbarn-backend-go/service"
@@ -13,12 +16,14 @@ import (
 type AssignmentHandler struct {
 	validate          validator.Validate
 	assignmentService service.AssignmentService
+	tagService        service.Tag
 }
 
-func NewAssignmentHandler(validate validator.Validate, assignmentService service.AssignmentService) AssignmentHandler {
+func NewAssignmentHandler(validate validator.Validate, assignmentService service.AssignmentService, tagService service.Tag) AssignmentHandler {
 	return AssignmentHandler{
 		validate:          validate,
 		assignmentService: assignmentService,
+		tagService:        tagService,
 	}
 }
 
@@ -86,4 +91,58 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, assignmentPublic)
 
+}
+
+func (a *AssignmentHandler) UpdateAssignment(c *gin.Context) {
+	assignmentIdString, ok := c.Params.Get("assignmentId")
+	if !ok {
+		logrus.Warn("Can't get assignmentId from parameters")
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	// Check if the tagId is int parsable
+	assignmentId, err := strconv.Atoi(assignmentIdString)
+	if err != nil {
+		logrus.Warn("Can't convert assignmentId to int: ", err)
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	// Bind the request body.
+	var updateAssignmentRequest model.UpdateAssignmentRequest
+	err = c.ShouldBindJSON(&updateAssignmentRequest)
+	if err != nil {
+		logrus.Warn("Can't bind request body to model: ", err)
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	err = a.validate.Struct(updateAssignmentRequest)
+	if err != nil {
+		logrus.Warn("Struct validation failed: ", err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	//Check if tagId is existed
+	updateTagIdRequest := updateAssignmentRequest.TagId
+	if updateTagIdRequest != nil && !a.tagService.IsTagExist(*updateTagIdRequest) {
+		logrus.Warn("Tag id is not exist")
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	updatedAssignment, err := a.assignmentService.UpdateAssignment(&updateAssignmentRequest, assignmentId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
+		return
+	}
+
+	publicAssignment := updatedAssignment.ToAssignmentPublic()
+	c.JSON(http.StatusOK, publicAssignment)
 }

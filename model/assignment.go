@@ -88,3 +88,29 @@ func (ar *AssignmentRequest) ToAssignment(author string) Assignment {
 		Tag:          &tag,
 	}
 }
+
+type UpdateAssignmentRequest struct {
+	Name         *string `json:"name,omitempty"`
+	Description  *string `json:"description,omitempty"`
+	DueDate      *int    `json:"dueDate,omitempty"`
+	TagId        *int    `json:"tagId,omitempty"`
+	ReminderTime *[]int  `json:"reminderTime,omitempty" validate:"max=3,omitempty"`
+}
+
+func (ur *UpdateAssignmentRequest) UpdateAssignment(assignment *Assignment) {
+	if ur.Name != nil {
+		assignment.Name = *ur.Name
+	}
+	if ur.Description != nil {
+		assignment.Description = *ur.Description
+	}
+	if ur.DueDate != nil {
+		assignment.DueDate = *ur.DueDate
+	}
+	if ur.TagId != nil {
+		assignment.TagID = *ur.TagId
+	}
+	if ur.ReminderTime != nil {
+		assignment.ReminderTime = convertReminterTimeToString(*ur.ReminderTime)
+	}
+}
