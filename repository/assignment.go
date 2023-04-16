@@ -14,6 +14,7 @@ type AssignmentRepository interface {
 	DeleteAssignment(assignmentId int) error
 	GetByID(id int) (*model.Assignment, error)
 	Update(assignment *model.Assignment) error
+	DeleteAssignment(assignmentId int) error
 }
 
 type assignmentRepository struct {
@@ -77,5 +78,8 @@ func (a *assignmentRepository) GetByID(id int) (*model.Assignment, error) {
 
 func (a *assignmentRepository) Update(assignment *model.Assignment) error {
 	result := a.db.Save(assignment)
+func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
+	logrus.Info("Delete assignment an id: ", assignmentId)
+	result := a.db.Joins("Tag").Delete(&model.Assignment{}, assignmentId)
 	return result.Error
 }
