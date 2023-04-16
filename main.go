@@ -64,7 +64,7 @@ func main() {
 
 	// Init the handler
 	tagHandler := handler.NewTagHandler(*validate, tagService)
-	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService)
+	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService, tagService)
 	accountHandler := handler.NewAccountHandler(accountService)
 
 	httpServer.Use(cors.New(cors.Config{
@@ -97,6 +97,7 @@ func main() {
 	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
 	assignmentRouter.DELETE("/:Id", assignmentHandler.DeleteAssignment)
 	assignmentRouter.GET("/", assignmentHandler.GetAllAssignment)
+	assignmentRouter.PATCH("/:assignmentId", assignmentHandler.UpdateAssignment)
 
 	// Account
 	accountRouter := router.Group("/account")
