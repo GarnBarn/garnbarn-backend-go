@@ -9,6 +9,7 @@ import (
 type AssignmentService interface {
 	CreateAssignment(assignment *model.Assignment) error
 	GetAllAssignment(author string, fromPresent bool) ([]model.Assignment, error)
+	GetAssignmentById(assignmentId int) (model.AssignmentPublic, error)
 	UpdateAssignment(updateAssignmentRequest *model.UpdateAssignmentRequest, id int) (*model.Assignment, error)
 }
 
@@ -39,4 +40,13 @@ func (a *assignmentService) UpdateAssignment(updateAssignmentRequest *model.Upda
 	updateAssignmentRequest.UpdateAssignment(assignment)
 	err = a.assignmentRepository.Update(assignment)
 	return assignment, err
+}
+
+func (a *assignmentService) GetAssignmentById(assignmentId int) (model.AssignmentPublic, error) {
+	assignment, err := a.assignmentRepository.GetByID(assignmentId)
+	if err != nil {
+		logrus.Error(err)
+		return model.AssignmentPublic{}, err
+	}
+	return assignment.ToAssignmentPublic(), nil
 }

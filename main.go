@@ -96,6 +96,7 @@ func main() {
 	assignmentRouter := router.Group("/assignment")
 	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
 	assignmentRouter.GET("/", assignmentHandler.GetAllAssignment)
+	assignmentRouter.GET("/:assignmentId", assignmentHandler.GetAssignmentById)
 	assignmentRouter.PATCH("/:assignmentId", assignmentHandler.UpdateAssignment)
 
 	// Account
