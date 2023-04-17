@@ -6,7 +6,7 @@ import (
 )
 
 type Tag interface {
-	GetAllTag() (tags []model.Tag, err error)
+	GetAllTag(author string) (tags []model.Tag, err error)
 	Create(tag *model.Tag) error
 	Update(tag *model.Tag) error
 	GetByID(id int) (*model.Tag, error)
@@ -26,8 +26,8 @@ func NewTagRepository(db *gorm.DB) Tag {
 	}
 }
 
-func (t *tag) GetAllTag() (tags []model.Tag, err error) {
-	res := t.db.Model(&tags).Find(&tags)
+func (t *tag) GetAllTag(author string) (tags []model.Tag, err error) {
+	res := t.db.Model(&tags).Where("author = ?", author).Find(&tags)
 	if res.Error != nil {
 		return tags, res.Error
 	}

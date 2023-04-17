@@ -9,7 +9,7 @@ import (
 )
 
 type AssignmentRepository interface {
-	GetAllAssignment(formPresent bool) ([]model.Assignment, error)
+	GetAllAssignment(author string, formPresent bool) ([]model.Assignment, error)
 	CreateAssignment(assignment *model.Assignment) error
 	DeleteAssignment(assignmentId int) error
 	GetByID(id int) (*model.Assignment, error)
@@ -50,10 +50,10 @@ func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
 	return result.Error
 }
 
-func (a *assignmentRepository) GetAllAssignment(fromPresent bool) (result []model.Assignment, err error) {
+func (a *assignmentRepository) GetAllAssignment(author string, fromPresent bool) (result []model.Assignment, err error) {
 	now := time.Now()
 
-	baseQuery := a.db.Model(&model.Assignment{}).Joins("Tag")
+	baseQuery := a.db.Model(&model.Assignment{}).Joins("Tag").Where("assignments.author = ?", author)
 
 	var res *gorm.DB
 	if fromPresent {
