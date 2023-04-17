@@ -80,6 +80,6 @@ func (a *assignmentRepository) Update(assignment *model.Assignment) error {
 	result := a.db.Save(assignment)
 func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
 	logrus.Info("Delete assignment an id: ", assignmentId)
-	result := a.db.Joins("Tag").Delete(&model.Assignment{}, assignmentId)
+	result := a.db.Delete(&model.Assignment{}, assignmentId)
 	return result.Error
 }
