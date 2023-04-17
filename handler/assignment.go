@@ -96,21 +96,6 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 
 }
 
-func (a *AssignmentHandler) DeleteAssignment(c *gin.Context) {
-	assignmentIdString, ok := c.Params.Get("Id")
-	if !ok {
-		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
-		return
-	}
-	assignmentId, err := strconv.Atoi(assignmentIdString)
-	err = a.assignmentService.DeleteAssignment(assignmentId)
-	if err != nil {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-	c.Status(http.StatusOK)
-}
-
 func (a *AssignmentHandler) UpdateAssignment(c *gin.Context) {
 	assignmentIdString, ok := c.Params.Get("assignmentId")
 	if !ok {

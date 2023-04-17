@@ -11,7 +11,6 @@ import (
 type AssignmentRepository interface {
 	GetAllAssignment(author string, formPresent bool) ([]model.Assignment, error)
 	CreateAssignment(assignment *model.Assignment) error
-	DeleteAssignment(assignmentId int) error
 	GetByID(id int) (*model.Assignment, error)
 	Update(assignment *model.Assignment) error
 	DeleteAssignment(assignmentId int) error
@@ -43,12 +42,6 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 
 	a.db.Joins("Tag").First(assignmentData, assignmentData.ID)
 	return nil
-}
-
-func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
-	logrus.Info("Delete assignment an id: ", assignmentId)
-	result := a.db.Joins("Tag").Delete(&model.Assignment{}, assignmentId)
-	return result.Error
 }
 
 func (a *assignmentRepository) GetAllAssignment(author string, fromPresent bool) (result []model.Assignment, err error) {
