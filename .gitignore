@@ -21,3 +21,5 @@
 .env
 
 .idea
+
+firebase-credential.json

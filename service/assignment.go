@@ -8,6 +8,7 @@ import (
 type AssignmentService interface {
 	CreateAssignment(assignment *model.Assignment) error
 	DeleteAssignment(assignmentId int) error
+	GetAllAssignment(fromPresent bool) ([]model.Assignment, error)
 }
 
 type assignmentService struct {
@@ -24,6 +25,11 @@ func (a *assignmentService) CreateAssignment(assignmentData *model.Assignment) e
 	return a.assignmentRepository.CreateAssignment(assignmentData)
 }
 
+<<<<<<< HEAD
 func (a *assignmentService) DeleteAssignment(assignmentId int) error {
 	return a.assignmentRepository.DeleteAssignment(assignmentId)
+=======
+func (a *assignmentService) GetAllAssignment(fromPresent bool) ([]model.Assignment, error) {
+	return a.assignmentRepository.GetAllAssignment(fromPresent)
+>>>>>>> 9539c11 ([GB-9] Implement Get All Assignment API (#8))
 }

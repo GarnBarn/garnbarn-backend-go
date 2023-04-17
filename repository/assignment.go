@@ -1,12 +1,15 @@
 package repository
 
 import (
+	"time"
+
 	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type AssignmentRepository interface {
+	GetAllAssignment(formPresent bool) ([]model.Assignment, error)
 	CreateAssignment(assignment *model.Assignment) error
 	DeleteAssignment(assignmentId int) error
 }
@@ -43,4 +46,23 @@ func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
 	logrus.Info("Delete assignment an id: ", assignmentId)
 	result := a.db.Joins("Tag").Delete(&model.Assignment{}, assignmentId)
 	return result.Error
+}
+
+func (a *assignmentRepository) GetAllAssignment(fromPresent bool) (result []model.Assignment, err error) {
+	now := time.Now()
+
+	baseQuery := a.db.Model(&model.Assignment{}).Joins("Tag")
+
+	var res *gorm.DB
+	if fromPresent {
+		res = baseQuery.Where("due_date >= ?", now.Unix()*1000).Find(&result)
+	} else {
+		res = baseQuery.Find(&result)
+	}
+
+	if res.Error != nil {
+		return result, res.Error
+	}
+
+	return result, nil
 }
