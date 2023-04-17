@@ -78,6 +78,9 @@ func (a *assignmentRepository) GetByID(id int) (*model.Assignment, error) {
 
 func (a *assignmentRepository) Update(assignment *model.Assignment) error {
 	result := a.db.Save(assignment)
+	return result.Error
+}
+
 func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
 	logrus.Info("Delete assignment an id: ", assignmentId)
 	result := a.db.Delete(&model.Assignment{}, assignmentId)
