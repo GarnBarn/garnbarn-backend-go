@@ -12,6 +12,8 @@ type AssignmentRepository interface {
 	GetAllAssignment(formPresent bool) ([]model.Assignment, error)
 	CreateAssignment(assignment *model.Assignment) error
 	DeleteAssignment(assignmentId int) error
+	GetByID(id int) (*model.Assignment, error)
+	Update(assignment *model.Assignment) error
 }
 
 type assignmentRepository struct {
@@ -65,4 +67,15 @@ func (a *assignmentRepository) GetAllAssignment(fromPresent bool) (result []mode
 	}
 
 	return result, nil
+}
+
+func (a *assignmentRepository) GetByID(id int) (*model.Assignment, error) {
+	var result model.Assignment
+	response := a.db.First(&result, id)
+	return &result, response.Error
+}
+
+func (a *assignmentRepository) Update(assignment *model.Assignment) error {
+	result := a.db.Save(assignment)
+	return result.Error
 }
