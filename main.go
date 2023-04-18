@@ -99,7 +99,6 @@ func main() {
 	assignmentRouter.GET("/", assignmentHandler.GetAllAssignment)
 	assignmentRouter.GET("/:assignmentId", assignmentHandler.GetAssignmentById)
 	assignmentRouter.PATCH("/:assignmentId", assignmentHandler.UpdateAssignment)
-	assignmentRouter.DELETE("/:Id", assignmentHandler.DeleteAssignment)
 
 	// Account
 	accountRouter := router.Group("/account")
