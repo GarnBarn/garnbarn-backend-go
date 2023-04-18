@@ -164,3 +164,28 @@ func (a *AssignmentHandler) DeleteAssignment(c *gin.Context) {
 	}
 	c.Status(http.StatusOK)
 }
+
+func (a *AssignmentHandler) GetAssignmentById(c *gin.Context) {
+	assignmentIdStr, ok := c.Params.Get("assignmentId")
+	if !ok {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+	assignmentId, err := strconv.Atoi(assignmentIdStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	publicAssignment, err := a.assignmentService.GetAssignmentById(assignmentId)
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusNotFound, gin.H{"message": "assignment id not found"})
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrGinBadRequestBody)
+		return
+	}
+	c.JSON(http.StatusOK, publicAssignment)
+}
