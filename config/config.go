@@ -16,7 +16,7 @@ type Config struct {
 	FIREBASE_CONFIG_FILE    string `envconfig:"FIREBASE_CONFIG_FILE" default:"firebase-credential.json"`
 	REDIS_CONNECTION_STRING string `envconfig:"REDIS_CONNECTION_STRING"`
 	REDIS_PASSWORD          string `envconfig:"REDIS_PASSWORD"`
-	RATE_LIMIT_STRING       string `envconfig:"RATE_LIMIT_STRING " default:"5-S"`
+	RATE_LIMIT_STRING       string `envconfig:"RATE_LIMIT_STRING" default:"5-S"`
 }
 
 func Load() Config {
