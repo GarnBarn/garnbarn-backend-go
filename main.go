@@ -68,15 +68,15 @@ func main() {
 	accountHandler := handler.NewAccountHandler(accountService)
 
 	httpServer.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"*"},
-		AllowHeaders:     []string{"*"},
-		ExposeHeaders:    []string{"*"},
-		AllowCredentials: true,
+		AllowOrigins:     appConfig.ALLOW_ORIGINS,
+		AllowMethods:     appConfig.ALLOW_METHODS,
+		AllowHeaders:     appConfig.ALLOW_HEADERS,
+		ExposeHeaders:    appConfig.EXPOSE_HEADERS,
+		AllowCredentials: appConfig.ALLOW_CREDENTIALS,
 		AllowOriginFunc: func(origin string) bool {
 			return true
 		},
-		MaxAge: 12 * time.Hour,
+		MaxAge: time.Duration(appConfig.MAX_AGE) * time.Hour,
 	}))
 
 	// Router
