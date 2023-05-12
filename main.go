@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"time"
 
 	firebase "firebase.google.com/go"
@@ -39,14 +40,21 @@ func main() {
 		logrus.Panic("Can't connect to db: ", err)
 	}
 
-	// Initilize the Firebase App
+	// Initialize the Firebase App
 	opt := option.WithCredentialsFile(appConfig.FIREBASE_CONFIG_FILE)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		logrus.Fatalln("error initializing app: %v\n", err)
 	}
 
-	// Create the required dependentices
+	// Initialize redis
+	_ = redis.NewClient(&redis.Options{
+		Addr:     appConfig.REDIS_CONNECTION_STRING,
+		Password: appConfig.REDIS_PASSWORD, // no password set
+		DB:       0,                        // use default DB
+	})
+
+	// Create the required dependencies
 	validate := validator.New()
 
 	// Create the repositroies
