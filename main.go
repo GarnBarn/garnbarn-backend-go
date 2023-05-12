@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"github.com/ulule/limiter/v3"
+	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"time"
 
 	firebase "firebase.google.com/go"
@@ -16,6 +18,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
+	redisStore "github.com/ulule/limiter/v3/drivers/store/redis"
 	"google.golang.org/api/option"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -48,11 +51,24 @@ func main() {
 	}
 
 	// Initialize redis
-	_ = redis.NewClient(&redis.Options{
+	client := redis.NewClient(&redis.Options{
 		Addr:     appConfig.REDIS_CONNECTION_STRING,
 		Password: appConfig.REDIS_PASSWORD, // no password set
 		DB:       0,                        // use default DB
 	})
+	store, err := redisStore.NewStore(client)
+	if err != nil {
+		logrus.Fatalln("error initializing redis: %v\n", err)
+	}
+
+	// Initialize rate limiter
+	rate, err := limiter.NewRateFromFormatted(appConfig.RATE_LIMIT_STRING)
+	if err != nil {
+		logrus.Fatalln("error initializing rate limiter: %v\n", err)
+	}
+
+	rateLimitStore := limiter.New(store, rate)
+	rateLimitMiddleware := mgin.NewMiddleware(rateLimitStore)
 
 	// Create the required dependencies
 	validate := validator.New()
@@ -90,6 +106,7 @@ func main() {
 	// Router
 	router := httpServer.Group("/api/v1")
 
+	router.Use(rateLimitMiddleware)
 	router.Use(handler.Authentication(app, accountRepository))
 
 	// Tag
