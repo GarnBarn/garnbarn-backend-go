@@ -27,6 +27,22 @@ type Tag struct {
 	SecretKeyTotp string
 }
 
+func RemainOrEncrypt(data string, key string) (string, error) {
+	if data == "" {
+		return data, nil
+	}
+
+	return Encrypt(data, key)
+}
+
+func RemainOrDecrypt(data string, key string) (string, error) {
+	if data == "" {
+		return data, nil
+	}
+
+	return DecryptAES(key, data)
+}
+
 func (t *Tag) BeforeSave(tx *gorm.DB) (err error) {
 	// Encrypt the data before saving into the database
 	key := tx.Statement.Context.Value(config.EncryptionContextKey).(string)
@@ -35,6 +51,25 @@ func (t *Tag) BeforeSave(tx *gorm.DB) (err error) {
 		logrus.Error("Encrypt Data Error: ", err)
 		return err
 	}
+
+	t.Color, err = RemainOrEncrypt(t.Color, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	t.ReminderTime, err = RemainOrEncrypt(t.ReminderTime, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	t.SecretKeyTotp, err = RemainOrEncrypt(t.SecretKeyTotp, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
 	return nil
 }
 
@@ -43,6 +78,24 @@ func (t *Tag) AfterFind(tx *gorm.DB) (err error) {
 
 	key := tx.Statement.Context.Value(config.EncryptionContextKey).(string)
 	t.Name, err = DecryptAES(key, t.Name)
+	if err != nil {
+		logrus.Error("Decrypt Data Error: ", err)
+		return err
+	}
+
+	t.Color, err = RemainOrDecrypt(t.Color, key)
+	if err != nil {
+		logrus.Error("Decrypt Data Error: ", err)
+		return err
+	}
+
+	t.ReminderTime, err = RemainOrDecrypt(t.ReminderTime, key)
+	if err != nil {
+		logrus.Error("Decrypt Data Error: ", err)
+		return err
+	}
+
+	t.SecretKeyTotp, err = RemainOrDecrypt(t.SecretKeyTotp, key)
 	if err != nil {
 		logrus.Error("Decrypt Data Error: ", err)
 		return err
