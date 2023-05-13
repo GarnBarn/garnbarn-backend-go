@@ -52,7 +52,6 @@ func main() {
 	}
 
 	// Initialize redis
-
 	redisDbStr, err := strconv.Atoi(appConfig.REDIS_DB)
 	if err != nil {
 		logrus.Fatalln("Can't convert REDIS_DB string to int: ", err)
