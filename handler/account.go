@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/GarnBarn/garnbarn-backend-go/config"
+	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/GarnBarn/garnbarn-backend-go/service"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -11,11 +13,13 @@ import (
 
 type AccountHandler struct {
 	accountService service.AccountService
+	appConfig      config.Config
 }
 
-func NewAccountHandler(accountService service.AccountService) AccountHandler {
+func NewAccountHandler(accountService service.AccountService, appConfig config.Config) AccountHandler {
 	return AccountHandler{
 		accountService: accountService,
+		appConfig:      appConfig,
 	}
 }
 
@@ -37,4 +41,36 @@ func (a *AccountHandler) GetAccount(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, account)
+}
+
+func (a *AccountHandler) CheckForComprimizedPassword(c *gin.Context) {
+	var request model.CheckCompromisedPasswordRequest
+	err := c.ShouldBind(&request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Bad Request Body."})
+		return
+	}
+
+	if a.appConfig.HIBP_API_KEY == "" {
+		// For Internal testing purpose.
+		c.JSON(http.StatusOK, gin.H{"message": "Skipped check, (Internal)"})
+		return
+	}
+
+	if len(request.HashedPassword) != 40 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Bad Request Body."})
+		return
+	}
+
+	isCompromised, err := a.accountService.CheckForCompromisedPassword(request.HashedPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
+	}
+
+	if isCompromised {
+		c.JSON(http.StatusFound, gin.H{"message": "Your password has been compromised"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "No passwd compromisation has been founded."})
 }
