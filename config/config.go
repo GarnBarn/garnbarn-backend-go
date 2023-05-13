@@ -20,6 +20,10 @@ type Config struct {
 	EXPOSE_HEADERS          []string `envconfig:"EXPOSE_HEADERS" default:"*"`
 	ALLOW_CREDENTIALS       bool     `envconfig:"ALLOW_CREDENTIALS" default:"true"`
 	MAX_AGE                 int      `envconfig:"MAX_AGE" default:"12"`
+	REDIS_CONNECTION_STRING string `envconfig:"REDIS_CONNECTION_STRING"`
+	REDIS_PASSWORD          string `envconfig:"REDIS_PASSWORD"`
+	RATE_LIMIT_STRING       string `envconfig:"RATE_LIMIT_STRING" default:"5-S"`
+	REDIS_DB                int    `envconfig:"REDIS_DB" default:"0"`
 }
 
 func Load() Config {
