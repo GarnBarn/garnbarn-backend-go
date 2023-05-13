@@ -6,7 +6,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
-	"strconv"
 	"time"
 
 	firebase "firebase.google.com/go"
@@ -52,14 +51,10 @@ func main() {
 	}
 
 	// Initialize redis
-	redisDbStr, err := strconv.Atoi(appConfig.REDIS_DB)
-	if err != nil {
-		logrus.Fatalln("Can't convert REDIS_DB string to int: ", err)
-	}
 	client := redis.NewClient(&redis.Options{
 		Addr:     appConfig.REDIS_CONNECTION_STRING,
 		Password: appConfig.REDIS_PASSWORD,
-		DB:       redisDbStr,
+		DB:       appConfig.REDIS_DB,
 	})
 	store, err := redisStore.NewStore(client)
 	if err != nil {
