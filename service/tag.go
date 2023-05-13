@@ -39,7 +39,6 @@ func (t *tag) CreateTag(tag *model.Tag) error {
 		return err
 	}
 	totpPrivateKey := totpKeyResult.Secret()
-	logrus.Info(totpPrivateKey)
 
 	tag.SecretKeyTotp = totpPrivateKey
 

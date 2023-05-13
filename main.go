@@ -75,7 +75,7 @@ func main() {
 	validate := validator.New()
 
 	// Create the repositroies
-	tagRepository := repository.NewTagRepository(db)
+	tagRepository := repository.NewTagRepository(db, appConfig.TAG_TABLE_AES_KEY)
 	assignmentRepository := repository.NewAssignmentRepository(db)
 	accountRepository := repository.NewAccountRepository(db)
 
