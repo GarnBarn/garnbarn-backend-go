@@ -2,8 +2,13 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
 
 	firebase "firebase.google.com/go"
+	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"github.com/GarnBarn/garnbarn-backend-go/repository"
 	"github.com/sirupsen/logrus"
@@ -11,11 +16,13 @@ import (
 
 type AccountService interface {
 	GetUserByUid(uid string) (account model.AccountPublic, err error)
+	CheckForCompromisedPassword(hashedPassword string) (isCompromised bool, err error)
 }
 
 type accountService struct {
 	accountRepository repository.AccountRepository
 	app               *firebase.App
+	appConfig         config.Config
 }
 
 func NewAccountService(app *firebase.App, accountRepository repository.AccountRepository) AccountService {
@@ -47,4 +54,39 @@ func (a *accountService) GetUserByUid(uid string) (account model.AccountPublic, 
 	}
 
 	return accountPrivate.ToAccountPublic(user.DisplayName, user.PhotoURL), nil
+}
+
+func (a *accountService) CheckForCompromisedPassword(hashedPassword string) (isCompromised bool, err error) {
+
+	// Make request to hibp.
+	prefixHashPassword := hashedPassword[0:5]
+	suffixHashPassword := strings.ToUpper(hashedPassword[5:])
+	url := fmt.Sprint("https://api.pwnedpasswords.com/range/", prefixHashPassword)
+	logrus.Debug(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		logrus.Error(err)
+		return false, err
+	}
+
+	// Validate the response
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.Error(err)
+		return false, err
+	}
+
+	bodyString := string(body)
+	bodyStringList := strings.Split(strings.ReplaceAll(bodyString, "\r\n", "\n"), "\n")
+
+	for _, item := range bodyStringList {
+		itemSplitted := strings.Split(item, ":")
+		if itemSplitted[0] == suffixHashPassword {
+			isCompromised = true
+			break
+		}
+	}
+
+	// Return the result.
+	return isCompromised, nil
 }
