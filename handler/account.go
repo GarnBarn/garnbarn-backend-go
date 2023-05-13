@@ -43,7 +43,7 @@ func (a *AccountHandler) GetAccount(c *gin.Context) {
 }
 
 func (a *AccountHandler) CheckForComprimizedPassword(c *gin.Context) {
-	var request model.CheckCompromizedPasswordRequest
+	var request model.CheckCompromisedPasswordRequest
 	err := c.ShouldBind(&request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Bad Request Body."})

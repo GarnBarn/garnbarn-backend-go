@@ -30,6 +30,6 @@ type AccountPlatform struct {
 	Line string `json:"line"`
 }
 
-type CheckCompromizedPasswordRequest struct {
+type CheckCompromisedPasswordRequest struct {
 	HashedPassword string `json:"hashedPassword"`
 }
