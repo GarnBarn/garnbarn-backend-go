@@ -14,6 +14,10 @@ type Config struct {
 	GIN_MODE                string `envconfig:"GIN_MODE" default:"release"`
 	MYSQL_CONNECTION_STRING string `envconfig:"MYSQL_CONNECTION_STRING"`
 	FIREBASE_CONFIG_FILE    string `envconfig:"FIREBASE_CONFIG_FILE" default:"firebase-credential.json"`
+	REDIS_CONNECTION_STRING string `envconfig:"REDIS_CONNECTION_STRING"`
+	REDIS_PASSWORD          string `envconfig:"REDIS_PASSWORD"`
+	RATE_LIMIT_STRING       string `envconfig:"RATE_LIMIT_STRING" default:"5-S"`
+	REDIS_DB                int    `envconfig:"REDIS_DB" default:"0"`
 }
 
 func Load() Config {
