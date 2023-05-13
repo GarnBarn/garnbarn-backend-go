@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/redis/go-redis/v9"
 	"github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
-	"time"
 
 	firebase "firebase.google.com/go"
 	"github.com/GarnBarn/garnbarn-backend-go/config"
@@ -105,12 +106,14 @@ func main() {
 
 	// Router
 	router := httpServer.Group("/api/v1")
-
 	router.Use(rateLimitMiddleware)
-	router.Use(handler.Authentication(app, accountRepository))
+
+	// Middleware
+	authMiddleware := handler.Authentication(app, accountRepository)
 
 	// Tag
 	tagRouter := router.Group("/tag")
+	tagRouter.Use(authMiddleware)
 	tagRouter.GET("/:id", tagHandler.GetTagById)
 	tagRouter.GET("/", tagHandler.GetAllTag)
 	tagRouter.POST("/", tagHandler.CreateTag)
@@ -119,6 +122,7 @@ func main() {
 
 	// Assignment
 	assignmentRouter := router.Group("/assignment")
+	assignmentRouter.Use(authMiddleware)
 	assignmentRouter.POST("/", assignmentHandler.CreateAssignment)
 	assignmentRouter.DELETE("/:Id", assignmentHandler.DeleteAssignment)
 	assignmentRouter.GET("/", assignmentHandler.GetAllAssignment)
@@ -127,7 +131,8 @@ func main() {
 
 	// Account
 	accountRouter := router.Group("/account")
-	accountRouter.GET("/", accountHandler.GetAccount)
+	accountRouter.GET("/", authMiddleware, accountHandler.GetAccount)
+	accountRouter.POST("/compromized", accountHandler.CheckForComprimizedPassword)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))

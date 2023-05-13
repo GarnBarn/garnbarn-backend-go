@@ -29,3 +29,7 @@ type AccountPublic struct {
 type AccountPlatform struct {
 	Line string `json:"line"`
 }
+
+type CheckCompromizedPasswordRequest struct {
+	HashedPassword string `json:"hashedPassword"`
+}

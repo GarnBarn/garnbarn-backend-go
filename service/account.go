@@ -11,6 +11,7 @@ import (
 
 type AccountService interface {
 	GetUserByUid(uid string) (account model.AccountPublic, err error)
+	CheckForCompromisedPassword(hashedPassword string) (isCompromized bool, err error)
 }
 
 type accountService struct {
@@ -47,4 +48,15 @@ func (a *accountService) GetUserByUid(uid string) (account model.AccountPublic, 
 	}
 
 	return accountPrivate.ToAccountPublic(user.DisplayName, user.PhotoURL), nil
+}
+
+func (a *accountService) CheckForCompromisedPassword(hashedPassword string) (isCompromized bool, err error) {
+
+	// TODO: Make request to ihbp.
+
+	// TODO: Validate the response.
+
+	// TODO: Return the result.
+
+	return false, nil
 }

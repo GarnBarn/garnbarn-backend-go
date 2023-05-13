@@ -18,6 +18,7 @@ type Config struct {
 	REDIS_PASSWORD          string `envconfig:"REDIS_PASSWORD"`
 	RATE_LIMIT_STRING       string `envconfig:"RATE_LIMIT_STRING" default:"5-S"`
 	REDIS_DB                int    `envconfig:"REDIS_DB" default:"0"`
+	HIBP_API_KEY            string `envconfig:"HIBP_API_KEY"`
 }
 
 func Load() Config {
