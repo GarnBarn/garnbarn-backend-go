@@ -16,9 +16,10 @@ type AccountHandler struct {
 	appConfig      config.Config
 }
 
-func NewAccountHandler(accountService service.AccountService) AccountHandler {
+func NewAccountHandler(accountService service.AccountService, appConfig config.Config) AccountHandler {
 	return AccountHandler{
 		accountService: accountService,
+		appConfig:      appConfig,
 	}
 }
 
@@ -52,7 +53,12 @@ func (a *AccountHandler) CheckForComprimizedPassword(c *gin.Context) {
 
 	if a.appConfig.HIBP_API_KEY == "" {
 		// For Internal testing purpose.
-		c.JSON(http.StatusOK, gin.H{"message": "ok"})
+		c.JSON(http.StatusOK, gin.H{"message": "Skipped check, (Internal)"})
+		return
+	}
+
+	if len(request.HashedPassword) != 40 {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Bad Request Body."})
 		return
 	}
 

@@ -90,7 +90,7 @@ func main() {
 	// Init the handler
 	tagHandler := handler.NewTagHandler(*validate, tagService)
 	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService, tagService)
-	accountHandler := handler.NewAccountHandler(accountService)
+	accountHandler := handler.NewAccountHandler(accountService, appConfig)
 
 	httpServer.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
