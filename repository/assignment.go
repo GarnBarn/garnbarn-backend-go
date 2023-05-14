@@ -45,12 +45,13 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 		return res.Error
 	}
 
-	tagData, err := a.tagRepository.GetByID(assignmentData.TagID)
+	// Get new assignment
+	newAssignment, err := a.GetByID(int(assignmentData.ID))
 	if err != nil {
+		logrus.Error(err)
 		return err
 	}
-
-	assignmentData.Tag = tagData
+	*assignmentData = *newAssignment
 	return nil
 }
 
@@ -70,12 +71,32 @@ func (a *assignmentRepository) GetAllAssignment(author string, fromPresent bool)
 		return result, res.Error
 	}
 
+	for _, item := range result {
+		if item.TagID == 0 || item.Tag == nil {
+			continue
+		}
+
+		decryptedTagData, err := a.tagRepository.GetByID(item.TagID)
+		if err != nil {
+			return result, err
+		}
+		*item.Tag = *decryptedTagData
+	}
+
 	return result, nil
 }
 
 func (a *assignmentRepository) GetByID(id int) (*model.Assignment, error) {
 	var result model.Assignment
 	response := a.db.WithContext(a.repositoryContext).First(&result, id)
+
+	tagData, err := a.tagRepository.GetByID(result.TagID)
+	if err != nil {
+		return nil, err
+	}
+
+	result.Tag = tagData
+
 	return &result, response.Error
 }
 

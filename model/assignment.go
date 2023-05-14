@@ -48,23 +48,22 @@ func (a *Assignment) BeforeSave(tx *gorm.DB) (err error) {
 
 func (a *Assignment) AfterFind(tx *gorm.DB) (err error) {
 	// Decrypt the data.
-
 	key := tx.Statement.Context.Value(config.AssignmentEncryptionContextKey).(string)
 	a.Name, err = DecryptAES(key, a.Name)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Assignment Decrypt Data Error: ", err)
 		return err
 	}
 
 	a.Description, err = RemainOrDecrypt(a.Description, key)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Assignment Decrypt Data Error: ", err)
 		return err
 	}
 
 	a.ReminderTime, err = RemainOrDecrypt(a.ReminderTime, key)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Assignment Decrypt Data Error: ", err)
 		return err
 	}
 

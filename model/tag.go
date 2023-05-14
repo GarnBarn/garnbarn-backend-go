@@ -79,25 +79,25 @@ func (t *Tag) AfterFind(tx *gorm.DB) (err error) {
 	key := tx.Statement.Context.Value(config.TagEncryptionContextKey).(string)
 	t.Name, err = RemainOrDecrypt(t.Name, key)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Tag Decrypt Data Error: ", err)
 		return err
 	}
 
 	t.Color, err = RemainOrDecrypt(t.Color, key)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Tag Color Decrypt Data Error: ", err)
 		return err
 	}
 
 	t.ReminderTime, err = RemainOrDecrypt(t.ReminderTime, key)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Tag Decrypt Data Error: ", err)
 		return err
 	}
 
 	t.SecretKeyTotp, err = RemainOrDecrypt(t.SecretKeyTotp, key)
 	if err != nil {
-		logrus.Error("Decrypt Data Error: ", err)
+		logrus.Error("Tag Decrypt Data Error: ", err)
 		return err
 	}
 	return nil
