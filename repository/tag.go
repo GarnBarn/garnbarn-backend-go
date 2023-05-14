@@ -60,7 +60,18 @@ func (t *tag) Create(tag *model.Tag) error {
 
 func (t *tag) Update(tag *model.Tag) error {
 	result := t.db.WithContext(t.repositoryContext).Save(tag)
-	return result.Error
+	if result.Error != nil {
+		return result.Error
+	}
+
+	newTag, err := t.GetByID(int(tag.ID))
+	if err != nil {
+		return err
+	}
+
+	*tag = *newTag
+
+	return nil
 }
 func (t *tag) DeleteTag(tagID int) error {
 	result := t.db.WithContext(t.repositoryContext).Delete(&model.Tag{}, tagID)
