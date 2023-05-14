@@ -4,8 +4,9 @@ import "gorm.io/gorm"
 
 type Account struct {
 	gorm.Model
-	Uid  string
-	Line string
+	Uid     string
+	Line    string
+	Consent bool
 }
 
 func (a *Account) ToAccountPublic(displayName string, profileImage string) AccountPublic {
@@ -16,6 +17,7 @@ func (a *Account) ToAccountPublic(displayName string, profileImage string) Accou
 		Platform: &AccountPlatform{
 			Line: a.Line,
 		},
+		Consent: a.Consent,
 	}
 }
 
@@ -24,6 +26,7 @@ type AccountPublic struct {
 	DisplayName  string           `json:"displayName"`
 	ProfileImage string           `json:"profileImage"`
 	Platform     *AccountPlatform `json:"platform"`
+	Consent      bool             `json:"consent"`
 }
 
 type AccountPlatform struct {
