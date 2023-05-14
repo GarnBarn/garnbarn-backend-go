@@ -50,13 +50,6 @@ func Authentication(app *firebase.App, accountRepository repository.AccountRepos
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"messsage": fmt.Sprint("Middleware Error: ", err.Error())})
 				return
 			}
-		} else if !account.Consent {
-			account, err = accountRepository.UpdateAccountConsentByUid(validatedIdToken.UID, true)
-
-			if err != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"messsage": fmt.Sprint("Middleware Error: ", err.Error())})
-				return
-			}
 		}
 
 		c.AddParam(UserUidKey, account.Uid)
