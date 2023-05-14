@@ -75,8 +75,12 @@ func main() {
 	validate := validator.New()
 
 	// Create the repositroies
-	tagRepository := repository.NewTagRepository(db)
-	assignmentRepository := repository.NewAssignmentRepository(db)
+	repoCtx := context.Background()
+	repoCtx = context.WithValue(repoCtx, config.AssignmentEncryptionContextKey, appConfig.ASSIGNMENT_TABLE_AES_KEY)
+	repoCtx = context.WithValue(repoCtx, config.TagEncryptionContextKey, appConfig.TAG_TABLE_AES_KEY)
+
+	tagRepository := repository.NewTagRepository(db, repoCtx)
+	assignmentRepository := repository.NewAssignmentRepository(db, repoCtx, tagRepository)
 	accountRepository := repository.NewAccountRepository(db)
 
 	// Create the services

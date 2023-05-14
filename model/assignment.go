@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -19,6 +20,54 @@ type Assignment struct {
 	DueDate      int
 	TagID        int
 	Tag          *Tag
+}
+
+func (a *Assignment) BeforeSave(tx *gorm.DB) (err error) {
+	// Encrypt the data before saving into the database
+	key := tx.Statement.Context.Value(config.AssignmentEncryptionContextKey).(string)
+	a.Name, err = RemainOrEncrypt(a.Name, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	a.Description, err = RemainOrEncrypt(a.Description, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	a.ReminderTime, err = RemainOrEncrypt(a.ReminderTime, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	return nil
+}
+
+func (a *Assignment) AfterFind(tx *gorm.DB) (err error) {
+	// Decrypt the data.
+	key := tx.Statement.Context.Value(config.AssignmentEncryptionContextKey).(string)
+	a.Name, err = DecryptAES(key, a.Name)
+	if err != nil {
+		logrus.Error("Assignment Decrypt Data Error: ", err)
+		return err
+	}
+
+	a.Description, err = RemainOrDecrypt(a.Description, key)
+	if err != nil {
+		logrus.Error("Assignment Decrypt Data Error: ", err)
+		return err
+	}
+
+	a.ReminderTime, err = RemainOrDecrypt(a.ReminderTime, key)
+	if err != nil {
+		logrus.Error("Assignment Decrypt Data Error: ", err)
+		return err
+	}
+
+	return nil
 }
 
 func (a *Assignment) ToAssignmentPublic() AssignmentPublic {
@@ -93,7 +142,7 @@ type UpdateAssignmentRequest struct {
 	Name         *string `json:"name,omitempty"`
 	Description  *string `json:"description,omitempty"`
 	DueDate      *int    `json:"dueDate,omitempty"`
-	TagId        *int    `json:"tagId,omitempty"`
+	TagId        *string `json:"tagId,omitempty"`
 	ReminderTime *[]int  `json:"reminderTime,omitempty" validate:"max=3,omitempty"`
 }
 
@@ -108,7 +157,11 @@ func (ur *UpdateAssignmentRequest) UpdateAssignment(assignment *Assignment) {
 		assignment.DueDate = *ur.DueDate
 	}
 	if ur.TagId != nil {
-		assignment.TagID = *ur.TagId
+		tagIdInt, err := strconv.Atoi(*ur.TagId)
+		if err != nil {
+			tagIdInt = 0
+		}
+		assignment.TagID = tagIdInt
 	}
 	if ur.ReminderTime != nil {
 		assignment.ReminderTime = convertReminterTimeToString(*ur.ReminderTime)
