@@ -102,7 +102,18 @@ func (a *assignmentRepository) GetByID(id int) (*model.Assignment, error) {
 
 func (a *assignmentRepository) Update(assignment *model.Assignment) error {
 	result := a.db.WithContext(a.repositoryContext).Save(assignment)
-	return result.Error
+	if result.Error != nil {
+		return result.Error
+	}
+
+	newAssignment, err := a.GetByID(int(assignment.ID))
+	if err != nil {
+		return err
+	}
+
+	*assignment = *newAssignment
+
+	return nil
 }
 
 func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {

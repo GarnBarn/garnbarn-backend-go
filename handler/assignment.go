@@ -130,7 +130,14 @@ func (a *AssignmentHandler) UpdateAssignment(c *gin.Context) {
 
 	//Check if tagId is existed
 	updateTagIdRequest := updateAssignmentRequest.TagId
-	if updateTagIdRequest != nil && !a.tagService.IsTagExist(*updateTagIdRequest) {
+	updateTagIdRequestInt, err := strconv.Atoi(*updateTagIdRequest)
+	if err != nil {
+		logrus.Warn("Struct validation failed: ", err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if updateTagIdRequest != nil && !a.tagService.IsTagExist(updateTagIdRequestInt) {
 		logrus.Warn("Tag id is not exist")
 		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
 		return

@@ -142,7 +142,7 @@ type UpdateAssignmentRequest struct {
 	Name         *string `json:"name,omitempty"`
 	Description  *string `json:"description,omitempty"`
 	DueDate      *int    `json:"dueDate,omitempty"`
-	TagId        *int    `json:"tagId,omitempty"`
+	TagId        *string `json:"tagId,omitempty"`
 	ReminderTime *[]int  `json:"reminderTime,omitempty" validate:"max=3,omitempty"`
 }
 
@@ -157,7 +157,11 @@ func (ur *UpdateAssignmentRequest) UpdateAssignment(assignment *Assignment) {
 		assignment.DueDate = *ur.DueDate
 	}
 	if ur.TagId != nil {
-		assignment.TagID = *ur.TagId
+		tagIdInt, err := strconv.Atoi(*ur.TagId)
+		if err != nil {
+			tagIdInt = 0
+		}
+		assignment.TagID = tagIdInt
 	}
 	if ur.ReminderTime != nil {
 		assignment.ReminderTime = convertReminterTimeToString(*ur.ReminderTime)
