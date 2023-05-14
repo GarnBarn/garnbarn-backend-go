@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -19,6 +20,55 @@ type Assignment struct {
 	DueDate      int
 	TagID        int
 	Tag          *Tag
+}
+
+func (a *Assignment) BeforeSave(tx *gorm.DB) (err error) {
+	// Encrypt the data before saving into the database
+	key := tx.Statement.Context.Value(config.AssignmentEncryptionContextKey).(string)
+	a.Name, err = RemainOrEncrypt(a.Name, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	a.Description, err = RemainOrEncrypt(a.Description, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	a.ReminderTime, err = RemainOrEncrypt(a.ReminderTime, key)
+	if err != nil {
+		logrus.Error("Encrypt Data Error: ", err)
+		return err
+	}
+
+	return nil
+}
+
+func (a *Assignment) AfterFind(tx *gorm.DB) (err error) {
+	// Decrypt the data.
+
+	key := tx.Statement.Context.Value(config.AssignmentEncryptionContextKey).(string)
+	a.Name, err = DecryptAES(key, a.Name)
+	if err != nil {
+		logrus.Error("Decrypt Data Error: ", err)
+		return err
+	}
+
+	a.Description, err = RemainOrDecrypt(a.Description, key)
+	if err != nil {
+		logrus.Error("Decrypt Data Error: ", err)
+		return err
+	}
+
+	a.ReminderTime, err = RemainOrDecrypt(a.ReminderTime, key)
+	if err != nil {
+		logrus.Error("Decrypt Data Error: ", err)
+		return err
+	}
+
+	return nil
 }
 
 func (a *Assignment) ToAssignmentPublic() AssignmentPublic {

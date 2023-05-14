@@ -31,7 +31,8 @@ type Config struct {
 }
 
 const (
-	EncryptionContextKey string = "encryptionKey"
+	TagEncryptionContextKey        string = "tagEncryptionKey"
+	AssignmentEncryptionContextKey string = "assignmentEncryptionKey"
 )
 
 func Load() Config {

@@ -45,7 +45,7 @@ func RemainOrDecrypt(data string, key string) (string, error) {
 
 func (t *Tag) BeforeSave(tx *gorm.DB) (err error) {
 	// Encrypt the data before saving into the database
-	key := tx.Statement.Context.Value(config.EncryptionContextKey).(string)
+	key := tx.Statement.Context.Value(config.TagEncryptionContextKey).(string)
 	t.Name, err = Encrypt(t.Name, key)
 	if err != nil {
 		logrus.Error("Encrypt Data Error: ", err)
@@ -76,8 +76,8 @@ func (t *Tag) BeforeSave(tx *gorm.DB) (err error) {
 func (t *Tag) AfterFind(tx *gorm.DB) (err error) {
 	// Decrypt the data.
 
-	key := tx.Statement.Context.Value(config.EncryptionContextKey).(string)
-	t.Name, err = DecryptAES(key, t.Name)
+	key := tx.Statement.Context.Value(config.TagEncryptionContextKey).(string)
+	t.Name, err = RemainOrDecrypt(t.Name, key)
 	if err != nil {
 		logrus.Error("Decrypt Data Error: ", err)
 		return err

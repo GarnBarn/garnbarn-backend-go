@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"time"
 
 	"github.com/GarnBarn/garnbarn-backend-go/model"
@@ -17,22 +18,26 @@ type AssignmentRepository interface {
 }
 
 type assignmentRepository struct {
-	db *gorm.DB
+	db                *gorm.DB
+	repositoryContext context.Context
+	tagRepository     Tag
 }
 
-func NewAssignmentRepository(db *gorm.DB) AssignmentRepository {
+func NewAssignmentRepository(db *gorm.DB, repositoryContext context.Context, tagRepository Tag) AssignmentRepository {
 	// Migrate the db
 	db.AutoMigrate(&model.Assignment{})
 
 	return &assignmentRepository{
-		db: db,
+		db:                db,
+		repositoryContext: repositoryContext,
+		tagRepository:     tagRepository,
 	}
 }
 
 func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment) error {
 	logrus.Debug("Executing Create on %T", assignmentData)
 
-	res := a.db.Create(assignmentData)
+	res := a.db.WithContext(a.repositoryContext).Create(assignmentData)
 
 	// HandleError
 	if res.Error != nil && res.Error != gorm.ErrRecordNotFound {
@@ -40,14 +45,19 @@ func (a *assignmentRepository) CreateAssignment(assignmentData *model.Assignment
 		return res.Error
 	}
 
-	a.db.Joins("Tag").First(assignmentData, assignmentData.ID)
+	tagData, err := a.tagRepository.GetByID(assignmentData.TagID)
+	if err != nil {
+		return err
+	}
+
+	assignmentData.Tag = tagData
 	return nil
 }
 
 func (a *assignmentRepository) GetAllAssignment(author string, fromPresent bool) (result []model.Assignment, err error) {
 	now := time.Now()
 
-	baseQuery := a.db.Model(&model.Assignment{}).Joins("Tag").Where("assignments.author = ?", author)
+	baseQuery := a.db.Model(&model.Assignment{}).Joins("Tag").WithContext(a.repositoryContext).Where("assignments.author = ?", author)
 
 	var res *gorm.DB
 	if fromPresent {
@@ -65,17 +75,17 @@ func (a *assignmentRepository) GetAllAssignment(author string, fromPresent bool)
 
 func (a *assignmentRepository) GetByID(id int) (*model.Assignment, error) {
 	var result model.Assignment
-	response := a.db.First(&result, id)
+	response := a.db.WithContext(a.repositoryContext).First(&result, id)
 	return &result, response.Error
 }
 
 func (a *assignmentRepository) Update(assignment *model.Assignment) error {
-	result := a.db.Save(assignment)
+	result := a.db.WithContext(a.repositoryContext).Save(assignment)
 	return result.Error
 }
 
 func (a *assignmentRepository) DeleteAssignment(assignmentId int) error {
 	logrus.Info("Delete assignment an id: ", assignmentId)
-	result := a.db.Delete(&model.Assignment{}, assignmentId)
+	result := a.db.WithContext(a.repositoryContext).Delete(&model.Assignment{}, assignmentId)
 	return result.Error
 }

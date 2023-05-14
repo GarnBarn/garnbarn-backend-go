@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 
-	"github.com/GarnBarn/garnbarn-backend-go/config"
 	"github.com/GarnBarn/garnbarn-backend-go/model"
 	"gorm.io/gorm"
 )
@@ -16,27 +15,22 @@ type Tag interface {
 	DeleteTag(tagID int) error
 }
 type tag struct {
-	encryptionKey string
-	db            *gorm.DB
-	tagContext    context.Context
+	db                *gorm.DB
+	repositoryContext context.Context
 }
 
-func NewTagRepository(db *gorm.DB, encryptionKey string) Tag {
+func NewTagRepository(db *gorm.DB, repositoryContext context.Context) Tag {
 	// Migrate the db
 	db.AutoMigrate(&model.Tag{})
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, config.EncryptionContextKey, encryptionKey)
-
 	return &tag{
-		db:            db,
-		encryptionKey: encryptionKey,
-		tagContext:    ctx,
+		db:                db,
+		repositoryContext: repositoryContext,
 	}
 }
 
 func (t *tag) GetAllTag(author string) (tags []model.Tag, err error) {
-	res := t.db.Model(&tags).WithContext(t.tagContext).Where("author = ?", author).Find(&tags)
+	res := t.db.Model(&tags).WithContext(t.repositoryContext).Where("author = ?", author).Find(&tags)
 	if res.Error != nil {
 		return tags, res.Error
 	}
@@ -45,12 +39,12 @@ func (t *tag) GetAllTag(author string) (tags []model.Tag, err error) {
 
 func (t *tag) GetByID(id int) (*model.Tag, error) {
 	tag := model.Tag{}
-	result := t.db.WithContext(t.tagContext).First(&tag, id)
+	result := t.db.WithContext(t.repositoryContext).First(&tag, id)
 	return &tag, result.Error
 }
 
 func (t *tag) Create(tag *model.Tag) error {
-	result := t.db.WithContext(t.tagContext).Create(tag)
+	result := t.db.WithContext(t.repositoryContext).Create(tag)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -65,10 +59,10 @@ func (t *tag) Create(tag *model.Tag) error {
 }
 
 func (t *tag) Update(tag *model.Tag) error {
-	result := t.db.WithContext(t.tagContext).Save(tag)
+	result := t.db.WithContext(t.repositoryContext).Save(tag)
 	return result.Error
 }
 func (t *tag) DeleteTag(tagID int) error {
-	result := t.db.WithContext(t.tagContext).Delete(&model.Tag{}, tagID)
+	result := t.db.WithContext(t.repositoryContext).Delete(&model.Tag{}, tagID)
 	return result.Error
 }
