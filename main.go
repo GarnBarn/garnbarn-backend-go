@@ -136,6 +136,7 @@ func main() {
 	// Account
 	accountRouter := router.Group("/account")
 	accountRouter.GET("/", authMiddleware, accountHandler.GetAccount)
+	accountRouter.POST("/consent", authMiddleware, accountHandler.UpdateAccountConsentByUid)
 	accountRouter.POST("/compromised", accountHandler.CheckForComprimizedPassword)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
