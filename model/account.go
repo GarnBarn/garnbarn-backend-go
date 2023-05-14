@@ -33,6 +33,11 @@ type AccountPlatform struct {
 	Line string `json:"line"`
 }
 
+type UpdateAccountRequest struct {
+	Uid     string `json:"uid"`
+	Consent bool   `json:"consent"`
+}
+
 type CheckCompromisedPasswordRequest struct {
 	HashedPassword string `json:"hashedPassword"`
 }
