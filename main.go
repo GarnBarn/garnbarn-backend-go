@@ -94,7 +94,7 @@ func main() {
 	// Init the handler
 	tagHandler := handler.NewTagHandler(*validate, tagService)
 	assignmentHandler := handler.NewAssignmentHandler(*validate, assignmentService, tagService)
-	accountHandler := handler.NewAccountHandler(accountService, appConfig)
+	accountHandler := handler.NewAccountHandler(accountService, appConfig, app)
 
 	httpServer.Use(cors.New(cors.Config{
 		AllowOrigins:     appConfig.ALLOW_ORIGINS,
@@ -138,6 +138,7 @@ func main() {
 	accountRouter.GET("/", authMiddleware, accountHandler.GetAccount)
 	accountRouter.POST("/consent", authMiddleware, accountHandler.UpdateAccountConsentByUid)
 	accountRouter.POST("/compromised", accountHandler.CheckForComprimizedPassword)
+	accountRouter.POST("/token", accountHandler.GetToken)
 
 	logrus.Info("Listening and serving HTTP on :", appConfig.HTTP_SERVER_PORT)
 	httpServer.Run(fmt.Sprint(":", appConfig.HTTP_SERVER_PORT))

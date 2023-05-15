@@ -29,6 +29,8 @@ type Config struct {
 	TAG_TABLE_AES_KEY        string   `envconfig:"TAG_TABLE_AES_KEY"`
 	ASSIGNMENT_TABLE_AES_KEY string   `envconfig:"ASSIGNMENT_TABLE_AES_KEY"`
 	ACCOUNT_TABLE_AES_KEY    string   `envconfig:"ACCOUNT_TABLE_AES_KEY"`
+	OAUTH_CLIENT_ID          string   `envconfig:"OAUTH_CLIENT_ID"`
+	OAUTH_CLIENT_SECRET      string   `envconfig:"OAUTH_CLIENT_SECRET"`
 }
 
 const (
