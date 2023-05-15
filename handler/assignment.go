@@ -51,7 +51,8 @@ func (a *AssignmentHandler) GetAllAssignment(c *gin.Context) {
 	}
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		logrus.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in server."})
 		return
 	}
 
@@ -84,8 +85,9 @@ func (a *AssignmentHandler) CreateAssignment(c *gin.Context) {
 	assignment := assignmentRequest.ToAssignment(c.Param(UserUidKey))
 
 	if err := a.assignmentService.CreateAssignment(&assignment); err != nil {
+		logrus.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
+			"message": "something happen in server.",
 		})
 		return
 	}
@@ -149,6 +151,7 @@ func (a *AssignmentHandler) UpdateAssignment(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
+		logrus.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
 		return
 	}
@@ -191,7 +194,8 @@ func (a *AssignmentHandler) GetAssignmentById(c *gin.Context) {
 		return
 	}
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrGinBadRequestBody)
+		logrus.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in server."})
 		return
 	}
 	c.JSON(http.StatusOK, publicAssignment)

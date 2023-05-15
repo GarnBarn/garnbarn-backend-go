@@ -31,7 +31,6 @@ func (t *tag) GetAllTag(author string) ([]model.Tag, error) {
 }
 
 func (t *tag) CreateTag(tag *model.Tag) error {
-
 	// Create the otp secret
 	totpKeyResult, err := totp.Generate(totp.GenerateOpts{Issuer: "GarnBarn", AccountName: "GarnBarn"})
 	if err != nil {
