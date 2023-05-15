@@ -36,7 +36,8 @@ func (a *AccountHandler) GetAccount(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		logrus.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in server."})
 		return
 	}
 
@@ -59,6 +60,7 @@ func (a *AccountHandler) UpdateAccountConsentByUid(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
+		logrus.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
 		return
 	}
@@ -87,7 +89,8 @@ func (a *AccountHandler) CheckForComprimizedPassword(c *gin.Context) {
 
 	isCompromised, err := a.accountService.CheckForCompromisedPassword(request.HashedPassword)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		logrus.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in server."})
 		return
 	}
 

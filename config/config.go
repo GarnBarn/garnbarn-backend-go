@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
@@ -42,6 +43,24 @@ func Load() Config {
 		// Default value for ENV.
 		ENV = "dev"
 	}
+
+	if ENV == "prod" {
+		gin.SetMode("release")
+
+		timeFormatLayout := "2006-01-02T15:04:05.000Z"
+		logrus.SetFormatter(&logrus.JSONFormatter{
+			FieldMap: logrus.FieldMap{
+				logrus.FieldKeyTime:  "timestamp",
+				logrus.FieldKeyLevel: "log_level",
+			},
+			TimestampFormat: timeFormatLayout,
+		})
+		logrus.SetLevel(logrus.InfoLevel)
+	} else {
+		logrus.SetLevel(logrus.TraceLevel)
+		logrus.SetFormatter(&logrus.TextFormatter{})
+	}
+
 	// Load the .env file only for dev env.
 	ENV_CONFIG, ok := os.LookupEnv("ENV_CONFIG")
 	if !ok {

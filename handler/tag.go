@@ -36,7 +36,8 @@ func (t *Tag) GetAllTag(c *gin.Context) {
 	tags, err := t.tagService.GetAllTag(uid)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		logrus.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in server."})
 		return
 	}
 	tagsPublic := []model.TagPublic{}
@@ -76,6 +77,7 @@ func (t *Tag) CreateTag(c *gin.Context) {
 
 	err = t.tagService.CreateTag(&tag)
 	if err != nil {
+		logrus.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
 		return
 	}
@@ -120,6 +122,7 @@ func (t *Tag) UpdateTag(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
+		logrus.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
 		return
 	}
@@ -146,7 +149,8 @@ func (t *Tag) GetTagById(c *gin.Context) {
 		return
 	}
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrGinBadRequestBody)
+		logrus.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in server."})
 		return
 	}
 
