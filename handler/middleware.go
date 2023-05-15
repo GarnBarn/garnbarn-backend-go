@@ -52,6 +52,11 @@ func Authentication(app *firebase.App, accountRepository repository.AccountRepos
 			}
 		}
 
+		if !account.Consent && c.FullPath() != "/api/v1/account/consent" {
+			c.AbortWithStatusJSON(http.StatusPreconditionFailed, gin.H{"messsage": "Middleware Error: User doesn't accept the consent"})
+			return
+		}
+
 		c.AddParam(UserUidKey, account.Uid)
 		c.Next()
 	}

@@ -43,6 +43,29 @@ func (a *AccountHandler) GetAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, account)
 }
 
+func (a *AccountHandler) UpdateAccountConsentByUid(c *gin.Context) {
+	// Bind the request body.
+	var updateAccountRequest model.UpdateAccountRequest
+	err := c.ShouldBindJSON(&updateAccountRequest)
+	if err != nil {
+		logrus.Warn("Can't bind request body to model: ", err)
+		c.JSON(http.StatusBadRequest, ErrGinBadRequestBody)
+		return
+	}
+
+	err = a.accountService.UpdateAccountConsentByUid(c.Param(UserUidKey), updateAccountRequest.Consent)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something happen in the server"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
+}
+
 func (a *AccountHandler) CheckForComprimizedPassword(c *gin.Context) {
 	var request model.CheckCompromisedPasswordRequest
 	err := c.ShouldBind(&request)

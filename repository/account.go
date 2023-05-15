@@ -8,6 +8,7 @@ import (
 type AccountRepository interface {
 	GetAccountByUid(uid string) (account model.Account, err error)
 	CreateAccountByUid(uid string) (account model.Account, err error)
+	UpdateAccount(account model.Account) error
 }
 
 type accountRepository struct {
@@ -32,11 +33,17 @@ func (a *accountRepository) GetAccountByUid(uid string) (account model.Account, 
 
 func (a *accountRepository) CreateAccountByUid(uid string) (account model.Account, err error) {
 	account = model.Account{
-		Uid: uid,
+		Uid:     uid,
+		Consent: false,
 	}
 	res := a.db.Save(&account)
 	if res.Error != nil {
 		return account, res.Error
 	}
 	return account, err
+}
+
+func (a *accountRepository) UpdateAccount(account model.Account) error {
+	result := a.db.Save(&account)
+	return result.Error
 }
