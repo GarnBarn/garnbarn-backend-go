@@ -159,7 +159,13 @@ func (a *AccountHandler) GetToken(c *gin.Context) {
 		return
 	}
 
-	logrus.Debug(parsedTokenBody.IDToken)
+	splittedScope := strings.Split(parsedTokenBody.Scope, " ")
+
+	if !contains(splittedScope, "garnbarn") {
+		logrus.Error("No Scope", splittedScope)
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
 
 	token, _, err := new(jwt.Parser).ParseUnverified(parsedTokenBody.IDToken, jwt.MapClaims{})
 	if err != nil {
@@ -206,4 +212,14 @@ func (a *AccountHandler) GetToken(c *gin.Context) {
 		Token: customToken,
 	})
 
+}
+
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
 }
