@@ -53,7 +53,7 @@ func (a *AccountHandler) UpdateAccountConsentByUid(c *gin.Context) {
 		return
 	}
 
-	updatedAccount, err := a.accountService.UpdateAccountConsentByUid(updateAccountRequest.Uid, updateAccountRequest.Consent)
+	err = a.accountService.UpdateAccountConsentByUid(c.Param(UserUidKey), updateAccountRequest.Consent)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
@@ -63,7 +63,7 @@ func (a *AccountHandler) UpdateAccountConsentByUid(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedAccount)
+	c.JSON(http.StatusOK, gin.H{"message": "ok"})
 }
 
 func (a *AccountHandler) CheckForComprimizedPassword(c *gin.Context) {

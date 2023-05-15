@@ -17,7 +17,7 @@ import (
 type AccountService interface {
 	GetUserByUid(uid string) (account model.AccountPublic, err error)
 	CheckForCompromisedPassword(hashedPassword string) (isCompromised bool, err error)
-	UpdateAccountConsentByUid(uid string, consent bool) (account model.Account, err error)
+	UpdateAccountConsentByUid(uid string, consent bool) (err error)
 }
 
 type accountService struct {
@@ -57,16 +57,19 @@ func (a *accountService) GetUserByUid(uid string) (account model.AccountPublic, 
 	return accountPrivate.ToAccountPublic(user.DisplayName, user.PhotoURL), nil
 }
 
-func (a *accountService) UpdateAccountConsentByUid(uid string, consent bool) (account model.Account, err error) {
-	account, err = a.accountRepository.GetAccountByUid(uid)
+func (a *accountService) UpdateAccountConsentByUid(uid string, consent bool) (err error) {
+	account, err := a.accountRepository.GetAccountByUid(uid)
 	if err != nil {
 		logrus.Error(err)
-		return account, err
+		return err
 	}
 
-	account, err = a.accountRepository.UpdateAccountConsentByUid(uid, consent)
+	// Set the account consent
+	account.Consent = consent
 
-	return account, err
+	// Save the updated account
+	err = a.accountRepository.UpdateAccount(account)
+	return err
 }
 
 func (a *accountService) CheckForCompromisedPassword(hashedPassword string) (isCompromised bool, err error) {

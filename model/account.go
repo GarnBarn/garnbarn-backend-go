@@ -34,8 +34,7 @@ type AccountPlatform struct {
 }
 
 type UpdateAccountRequest struct {
-	Uid     string `json:"uid"`
-	Consent bool   `json:"consent"`
+	Consent bool `json:"consent"`
 }
 
 type CheckCompromisedPasswordRequest struct {
